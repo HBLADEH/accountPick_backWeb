@@ -48,7 +48,7 @@ const StoreModel: ModuleType = {
                 }
             }
 
-            commit('changeLoginStatus',status);
+            commit('changeLoginStatus', status);
 
             if (status === 'ok') {
                 return true;

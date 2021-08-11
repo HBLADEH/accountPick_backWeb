@@ -63,6 +63,7 @@ export default defineComponent({
       username: '',
       password: '',
     });
+
     // 表单验证
     const rulesRef = reactive({
       username: [
@@ -78,6 +79,7 @@ export default defineComponent({
         },
       ],
     });
+
     // form
     const formRef = ref<typeof ElForm>();
     // 登录loading
@@ -89,6 +91,7 @@ export default defineComponent({
         const valid: boolean = formRef.value ? await formRef.value.validate() : false;
         if (valid === true) {
           const res: boolean = await store.dispatch('userlogin/login', modelRef);
+
           if (res === true) {
             ElMessage.success(t('page.user.login.form.login-success'));
             const { redirect, ...query } = currentRoute.value.query;
