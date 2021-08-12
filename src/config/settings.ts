@@ -44,7 +44,7 @@ const settings: SettingsType = {
     topNavEnable: false,
     headFixed: true,
     siteTokenKey: 'admin_element_vue_token',
-    ajaxHeadersTokenKey: 'sa-token',
+    ajaxHeadersTokenKey: 'x-token',
     ajaxResponseNoVerifyUrl: [
         '/user/login', // 用户登录
         '/user/info', // 获取用户信息
