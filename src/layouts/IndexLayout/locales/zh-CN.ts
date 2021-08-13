@@ -10,6 +10,7 @@ export default {
 
   'index-layout.menu.goods': '商品',
   'index-layout.menu.goods.list': '商品列表',
+  'index-layout.menu.goods.listadd': '添加商品',
 
   'index-layout.menu.component': '组件',
   'index-layout.menu.component.icon': '图标',

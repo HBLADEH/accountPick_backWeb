@@ -45,21 +45,25 @@
     <el-card shadow="never" class="cus-card">
       <template #header>
         <el-row>
-          <el-col :span="8">
-            <el-button type="primary" @click="() => setCreateFormVisible(true)">新增</el-button>
-          </el-col>
-          <el-col :span="16" class="text-align-right">
+          <div class="text-align-right">
+            <el-col :xs="24" :sm="24" :md="24">
+              <el-button type="primary" @click="() => setCreateFormVisible(true)">新增</el-button>
+              <el-button type="danger">删除</el-button>
+            </el-col>
+          </div>
+          <!-- <el-col :span="16" class="text-align-right">
             <el-radio-group v-model="tabVal">
               <el-radio-button label="all">全部</el-radio-button>
               <el-radio-button label="header">头部</el-radio-button>
               <el-radio-button label="footer">底部</el-radio-button>
             </el-radio-group>
-          </el-col>
+          </el-col> -->
         </el-row>
       </template>
 
       <el-table row-key="id" :data="list" v-loading="loading">
-
+        <el-table-column type="selection" width="55">
+        </el-table-column>
         <el-table-column type="index" label="序号" :index="(index) => {
                         return (pagination.current - 1) * pagination.pageSize + index + 1;
                     }" width="80">
