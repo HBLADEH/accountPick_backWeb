@@ -46,11 +46,11 @@ const routes: Array<RoutesDataItem> = [
 
 
 const router = createRouter({
-    scrollBehavior(/* to, from, savedPosition */) {
-      return { top: 0 }
-    },
-    history: createWebHashHistory(import.meta.env.BASE_URL),
-    routes: routes as any,
-  });
-  
+  scrollBehavior(/* to, from, savedPosition */) {
+    return { top: 0 }
+  },
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  routes: routes as any,
+});
+
 export default router;

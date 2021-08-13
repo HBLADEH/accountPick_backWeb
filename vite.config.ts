@@ -39,20 +39,20 @@ export default defineConfig(({ mode, command }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
-    server: {
-      port,
-    }
     // server: {
-    //   port: port,
-    //   open: false, //自动打开 
-    //   proxy: { // 本地开发环境通过代理实现跨域，生产环境使用 nginx 转发
-    //     // 正则表达式写法
-    //     '^/api': {
-    //       target: 'http://localhost:5000/v1', // 后端服务实际地址
-    //       changeOrigin: true, //开启代理
-    //       rewrite: (path) => path.replace(/^\/api/, '')
-    //     }
-    //   }
-    // },
+    //   port,
+    // }
+    server: {
+      port: port,
+      open: false, //自动打开 
+      proxy: { // 本地开发环境通过代理实现跨域，生产环境使用 nginx 转发
+        // 正则表达式写法
+        '^/api': {
+          target: 'http://localhost:5000/v1', // 后端服务实际地址
+          changeOrigin: true, //开启代理
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
+    },
   }
 })
