@@ -39,4 +39,7 @@ export default {
   'index-layout.menu.roles.all': '用户都有权限',
   'index-layout.menu.roles.user': 'Users有权限',
   'index-layout.menu.roles.test': 'Tests有权限',
+
+  'page.user.login.form.logout-success': '登出成功！',
+
 };

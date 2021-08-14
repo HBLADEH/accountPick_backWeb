@@ -1,12 +1,12 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import { queryCurrent, queryMessage } from "@/services/user";
+import { queryCurrent, doLogout } from "@/services/user";
 import { removeToken } from "@/utils/localToken";
 
 export interface CurrentUser {
   id: number;
-  name: string;
+  nickname: string;
   avatar: string;
   roles: string[];
 }
@@ -24,7 +24,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
   };
   actions: {
     fetchCurrent: Action<StateType, StateType>;
-    fetchMessage: Action<StateType, StateType>;
+    // fetchMessage: Action<StateType, StateType>;
     logout: Action<StateType, StateType>;
   };
 }
@@ -32,7 +32,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 const initState: StateType = {
   currentUser: {
     id: 0,
-    name: '',
+    nickname: '',
     avatar: '',
     roles: [],
   },
@@ -67,19 +67,25 @@ const StoreModel: ModuleType = {
         return false;
       }
     },
-    async fetchMessage({ commit }) {
-      try {
-        const response: ResponseData = await queryMessage();
-        const { data } = response;        
-        commit('saveMessage', data || 0);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
+    // async fetchMessage({ commit }) {
+    //   try {
+    //     const response: ResponseData = await queryMessage();
+    //     const { data } = response;
+    //     commit('saveMessage', data || 0);
+    //     return true;
+    //   } catch (error) {
+    //     return false;
+    //   }
+    // },
     async logout({ commit }) {
       try {
+
+        /* 删除本地 Token */
         await removeToken();
+
+        /* 请求登出 */
+        const response: ResponseData = await doLogout();
+
         commit('saveCurrentUser', { ...initState.currentUser });
         return true;
       } catch (error) {
@@ -92,4 +98,3 @@ const StoreModel: ModuleType = {
 
 
 export default StoreModel;
-  

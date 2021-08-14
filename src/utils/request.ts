@@ -40,14 +40,14 @@ const errorHandler = (error: any) => {
         // 自定义错误
         const { config, data } = response;
         const { url, baseURL } = config;
-        const { code, msg } = data;
+        const { code, message } = data;
         const reqUrl = url.split("?")[0].replace(baseURL, '');
         const noVerifyBool = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
         if (!noVerifyBool) {
             ElNotification({
                 type: 'error',
                 title: `提示`,
-                message: customCodeMessage[code] || msg || 'Error',
+                message: customCodeMessage[code] || message || 'Error',
             });
 
             if (code === 10002) {
@@ -123,7 +123,7 @@ request.interceptors.response.use(
         const { code, token } = res;
 
         // 自定义状态码验证
-        if (code !== 0) {
+        if (code !== 200) {
             return Promise.reject({
                 response,
                 message: 'CustomError',
