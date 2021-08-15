@@ -20,9 +20,9 @@ export default defineComponent({
 
     const message = computed<number>(() => store.state.user.message);
 
-    onMounted(() => {
-      store.dispatch('user/fetchMessage');
-    });
+    // onMounted(() => {
+    //   store.dispatch('user/fetchMessage');
+    // });
 
     return {
       message: message as unknown as number,

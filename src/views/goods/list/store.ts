@@ -46,7 +46,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
   namespaced: true,
-  name: 'ListSearchTable',
+  name: 'GoodsSearchTable',
   state: {
     ...initState
   },
@@ -65,10 +65,10 @@ const StoreModel: ModuleType = {
         const { data } = response;
         commit('setTableData', {
           ...initState.tableData,
-          list: data.list || [],
+          list: data.records || [],
           pagination: {
             ...initState.tableData.pagination,
-            current: payload.page,
+            current: data.current,
             total: data.total || 0,
           },
         });

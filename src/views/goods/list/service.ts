@@ -3,7 +3,7 @@ import { TableListQueryParams, TableListItem } from './data.d';
 
 export async function queryList(params?: TableListQueryParams): Promise<any> {
   return request({
-    url: '/pages/list',
+    url: '/goods/listAll',
     method: 'get',
     params,
   });

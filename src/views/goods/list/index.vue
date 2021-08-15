@@ -18,23 +18,23 @@
               <TypeSelect placeholder="请选择" v-model="searchModelRef.type" style="width:100%" />
             </el-form-item>
           </el-col>
-          <el-col v-if='searchOpen' :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+          <!-- <el-col v-if='searchOpen' :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
             <el-form-item label="备注：">
               <el-input placeholder="请输入" v-model="searchModelRef.desc" />
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
             <div class="text-align-right" style="padding-bottom: 24px">
               <el-button type="primary" @click="searchFormSubmit">查询</el-button>
               <el-button @click="searchResetFields">重置</el-button>
-              <el-button type="text" style="margin-left: 8px" @click="setSearchOpen">
+              <!-- <el-button type="text" style="margin-left: 8px" @click="setSearchOpen">
                 <template v-if="searchOpen">
                   收起 <i class="el-icon-arrow-up"></i>
                 </template>
                 <template v-else>
                   展开 <i class="el-icon-arrow-down"></i>
                 </template>
-              </el-button>
+              </el-button> -->
             </div>
           </el-col>
         </el-row>
@@ -64,26 +64,32 @@
       <el-table row-key="id" :data="list" v-loading="loading">
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column type="index" label="序号" :index="(index) => {
+        <!-- <el-table-column type="index" label="序号" :index="(index) => {
                         return (pagination.current - 1) * pagination.pageSize + index + 1;
                     }" width="80">
+        </el-table-column> -->
+        <el-table-column label="序号" prop="id">
         </el-table-column>
-
         <el-table-column label="名称" prop="name">
-          <template #default="{row}">
-            <a :href="row.href" target="_blank">{{row.name}}</a>
-          </template>
         </el-table-column>
-
-        <el-table-column label="备注" prop="desc">
+        <el-table-column label="封面图" prop="coverImg">
         </el-table-column>
-
-        <el-table-column label="位置" prop="type">
+        <el-table-column label="游戏名称" prop="gameName">
+        </el-table-column>
+        <el-table-column label="渠道名称" prop="channelName">
+        </el-table-column>
+        <el-table-column label="价格" prop="price">
+        </el-table-column>
+        <el-table-column label="创建时间" prop="createTime">
+        </el-table-column>
+        <el-table-column label="更新时间" prop="updateTime">
+        </el-table-column>
+        <!-- <el-table-column label="位置" prop="type">
           <template #default="{row}">
             <el-tag v-if="row.type === 'header'" type="success">头部</el-tag>
             <el-tag v-else type="warning">底部</el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column label="操作" prop="action" width="150">
           <template #default="{row}">
@@ -116,9 +122,9 @@ import CreateForm from './components/CreateForm.vue';
 import UpdateForm from './components/UpdateForm.vue';
 import TypeSelect from './components/TypeSelect.vue';
 import { StateType as ListStateType } from './store';
-import { PaginationConfig, TableListItem } from './data.d';
+import { PaginationConfig, TableListItem, TableSearchItem } from './data.d';
 
-interface ListSearchTablePageSetupData {
+interface GoodsSearchTablePageSetupData {
   list: TableListItem[];
   pagination: PaginationConfig;
   loading: boolean;
@@ -139,37 +145,39 @@ interface ListSearchTablePageSetupData {
   tabVal: string;
   searchOpen: boolean;
   setSearchOpen: () => void;
-  searchModelRef: Omit<TableListItem, 'id'>;
+  searchModelRef: Omit<TableSearchItem, 'id'>;
   searchFormRef: typeof ElForm;
   searchResetFields: () => void;
   searchFormSubmit: () => Promise<void>;
 }
 
 export default defineComponent({
-  name: 'ListSearchTablePage',
+  name: 'GoodsSearchTablePage',
   components: {
     CreateForm,
     UpdateForm,
     TypeSelect,
   },
-  setup(): ListSearchTablePageSetupData {
-    const store = useStore<{ ListSearchTable: ListStateType }>();
+  setup(): GoodsSearchTablePageSetupData {
+    const store = useStore<{ GoodsSearchTable: ListStateType }>();
 
     // 列表数据
-    const list = computed<TableListItem[]>(() => store.state.ListSearchTable.tableData.list);
+    const list = computed<TableListItem[]>(() => store.state.GoodsSearchTable.tableData.list);
 
     // 列表分页
     const pagination = computed<PaginationConfig>(
-      () => store.state.ListSearchTable.tableData.pagination
+      () => store.state.GoodsSearchTable.tableData.pagination
     );
 
     // 获取数据
     const loading = ref<boolean>(true);
     const getList = async (current: number): Promise<void> => {
       loading.value = true;
-      await store.dispatch('ListSearchTable/queryTableData', {
-        per: pagination.value.pageSize,
-        page: current,
+      console.log(store.state.GoodsSearchTable.tableData);
+
+      await store.dispatch('GoodsSearchTable/queryTableData', {
+        pageSize: pagination.value.pageSize,
+        currentPage: current,
       });
       loading.value = false;
     };
@@ -184,7 +192,7 @@ export default defineComponent({
     // 新增弹框 - 提交
     const createSubmit = async (values: Omit<TableListItem, 'id'>, resetFields: () => void) => {
       createSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('ListSearchTable/createTableData', values);
+      const res: boolean = await store.dispatch('GoodsSearchTable/createTableData', values);
       if (res === true) {
         resetFields();
         setCreateFormVisible(false);
@@ -201,14 +209,14 @@ export default defineComponent({
     };
     const updataFormCancel = () => {
       setUpdateFormVisible(false);
-      store.commit('ListSearchTable/setUpdateData', {});
+      store.commit('GoodsSearchTable/setUpdateData', {});
     };
     // 编辑弹框 - 提交 loading
     const updateSubmitLoading = ref<boolean>(false);
     // 编辑弹框 - 提交
     const updateSubmit = async (values: TableListItem, resetFields: () => void) => {
       updateSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('ListSearchTable/updateTableData', values);
+      const res: boolean = await store.dispatch('GoodsSearchTable/updateTableData', values);
       if (res === true) {
         updataFormCancel();
         ElMessage.success('编辑成功！');
@@ -219,12 +227,12 @@ export default defineComponent({
 
     // 编辑弹框 data
     const updateData = computed<Partial<TableListItem>>(
-      () => store.state.ListSearchTable.updateData
+      () => store.state.GoodsSearchTable.updateData
     );
     const detailUpdateLoading = ref<number[]>([]);
     const detailUpdateData = async (id: number) => {
       detailUpdateLoading.value = [id];
-      const res: boolean = await store.dispatch('ListSearchTable/queryUpdateData', id);
+      const res: boolean = await store.dispatch('GoodsSearchTable/queryUpdateData', id);
       if (res === true) {
         setUpdateFormVisible(true);
       }
@@ -242,7 +250,7 @@ export default defineComponent({
       })
         .then(async () => {
           deleteLoading.value = [id];
-          const res: boolean = await store.dispatch('ListSearchTable/deleteTableData', id);
+          const res: boolean = await store.dispatch('GoodsSearchTable/deleteTableData', id);
           if (res === true) {
             ElMessage.success('删除成功！');
             getList(pagination.value.current);
@@ -262,11 +270,8 @@ export default defineComponent({
       searchOpen.value = !searchOpen.value;
     };
     // 表单值
-    const searchModelRef = reactive<Omit<TableListItem, 'id'>>({
+    const searchModelRef = reactive<Omit<TableSearchItem, 'id'>>({
       name: '',
-      desc: '',
-      href: '',
-      type: '',
     });
     // search form
     const searchFormRef = ref<typeof ElForm>();
@@ -274,9 +279,9 @@ export default defineComponent({
     const searchResetFields = () => {
       searchFormRef.value && searchFormRef.value.resetFields();
       searchModelRef.name = '';
-      searchModelRef.desc = '';
-      searchModelRef.href = '';
-      searchModelRef.type = '';
+      // searchModelRef.desc = '';
+      // searchModelRef.href = '';
+      // searchModelRef.type = '';
     };
     // 搜索
     const searchFormSubmit = async () => {

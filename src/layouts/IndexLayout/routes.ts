@@ -69,7 +69,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon: 'page',
         title: 'index-layout.menu.goods.add',
         path: 'add',
-        component: () => import('@/views/goods/list/index.vue')
+        component: () => import('@/views/goods/add/index.vue')
       }
     ]
   },

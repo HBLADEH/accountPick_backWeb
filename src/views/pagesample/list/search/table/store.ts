@@ -3,11 +3,11 @@ import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
 import { TableDataType, TableListItem, TableListQueryParams } from './data.d';
 import {
-  queryList,
-  removeData,
-  createData,
-  detailData,
-  updateData,
+    queryList,
+    removeData,
+    createData,
+    detailData,
+    updateData,
 } from './service';
 
 
@@ -32,14 +32,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
 }
 const initState: StateType = {
     tableData: {
-      list: [],
-      pagination: {
-        total: 0,
-        current: 1,
-        pageSize: 10,
-        showSizeChanger: true,
-        showQuickJumper: true,
-      },
+        list: [],
+        pagination: {
+            total: 0,
+            current: 1,
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+        },
     },
     updateData: {},
 };
@@ -59,17 +59,17 @@ const StoreModel: ModuleType = {
         },
     },
     actions: {
-        async queryTableData({ commit }, payload: TableListQueryParams ) {
+        async queryTableData({ commit }, payload: TableListQueryParams) {
             try {
                 const response: ResponseData = await queryList(payload);
                 const { data } = response;
-                commit('setTableData',{
+                commit('setTableData', {
                     ...initState.tableData,
                     list: data.list || [],
                     pagination: {
-                      ...initState.tableData.pagination,
-                      current: payload.page,
-                      total: data.total || 0,
+                        ...initState.tableData.pagination,
+                        current: payload.page,
+                        total: data.total || 0,
                     },
                 });
                 return true;
@@ -77,7 +77,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async deleteTableData({ commit }, payload: number ) {
+        async deleteTableData({ commit }, payload: number) {
             try {
                 await removeData(payload);
                 return true;
@@ -85,7 +85,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async createTableData({ commit }, payload: Pick<TableListItem, "name" | "desc" | "href" | "type"> ) {
+        async createTableData({ commit }, payload: Pick<TableListItem, "name" | "desc" | "href" | "type">) {
             try {
                 await createData(payload);
                 return true;
@@ -93,11 +93,11 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async queryUpdateData({ commit }, payload: number ) {
+        async queryUpdateData({ commit }, payload: number) {
             try {
                 const response: ResponseData = await detailData(payload);
                 const { data } = response;
-                commit('setUpdateData',{
+                commit('setUpdateData', {
                     ...initState.updateData,
                     ...data,
                 });
@@ -106,7 +106,7 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async updateTableData({ commit }, payload: TableListItem ) {
+        async updateTableData({ commit }, payload: TableListItem) {
             try {
                 const { id, ...params } = payload;
                 await updateData(id, { ...params });
@@ -114,7 +114,7 @@ const StoreModel: ModuleType = {
             } catch (error) {
                 return false;
             }
-        },        
+        },
     }
 };
 

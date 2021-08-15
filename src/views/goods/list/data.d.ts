@@ -11,12 +11,18 @@ export interface PaginationConfig {
   showQuickJumper: boolean;
 }
 
+export interface TableSearchItem {
+  id: number;
+  name: string;
+}
 export interface TableListItem {
   id: number;
   name: string;
-  desc: string;
-  href: string;
-  type: string;
+  price: number;
+  gameName: string;
+  channelName: string;
+  createTime: string;
+  updateTime: string;
 }
 
 export interface TableDataType {
