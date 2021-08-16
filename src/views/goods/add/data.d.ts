@@ -6,4 +6,5 @@ export interface FormDataType {
   radio2: string;
   checkbox: string[];
   remark: string;
+  content: string;
 }
