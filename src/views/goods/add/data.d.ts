@@ -8,3 +8,12 @@ export interface FormDataType {
   remark: string;
   content: string;
 }
+
+export interface GoodsFormDataType {
+  name: string;
+  coverImg: string;
+  price: number;
+  content: string;
+  game_id: number;
+  channel_id: number;
+}
