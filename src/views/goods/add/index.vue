@@ -10,23 +10,19 @@
               <el-input v-model="modelRef.name" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="封面图片" prop="coverImg">
-              <el-input v-model="modelRef.name" placeholder="请输入" />
+              <el-input v-model="modelRef.coverImg" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="价格" prop="price">
-              <el-input v-model="modelRef.name" placeholder="请输入" />
+              <el-input type="number" v-model="modelRef.price" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="所属游戏" prop="gameId">
-              <el-select v-model="modelRef.select" placeholder="请选择" clearable style="width:100%">
-                <el-option label="select1" value="1"></el-option>
-                <el-option label="select2" value="2"></el-option>
-                <el-option label="select3" value="3"></el-option>
+              <el-select v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%">
+                <el-option label="请选择" value="0"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="所属渠道" prop="channelId">
-              <el-select v-model="modelRef.select" placeholder="请选择" clearable style="width:100%">
-                <el-option label="select1" value="1"></el-option>
-                <el-option label="select2" value="2"></el-option>
-                <el-option label="select3" value="3"></el-option>
+              <el-select v-model="modelRef.channelId" placeholder="请选择" clearable style="width:100%">
+                <el-option label="请选择" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -59,12 +55,12 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import { ElForm, ElMessage } from 'element-plus';
-import { FormDataType } from './data.d';
+import { GoodsFormDataType } from './data.d';
 import { StateType as FormStateType } from './store';
 import CKEditor from '@/components/CKEditor/index.vue';
 
 interface FormBasicPageSetupData {
-  modelRef: FormDataType;
+  modelRef: GoodsFormDataType;
   rulesRef: any;
   formRef: typeof ElForm;
   resetFields: () => void;
@@ -81,47 +77,40 @@ export default defineComponent({
     const store = useStore<{ FormBasic: FormStateType }>();
 
     // 表单值
-    const modelRef = reactive<FormDataType>({
-      title: '',
-      date: [],
-      select: '',
-      radio1: '',
-      radio2: '',
-      checkbox: [],
-      remark: '',
+    const modelRef = reactive<GoodsFormDataType>({
+      name: '',
+      coverImg: '',
+      price: 0.0,
       content: '',
+      gameId: '',
+      channelId: '',
     });
     // 表单验证
     const rulesRef = reactive({
-      title: [
+      name: [
         {
           required: true,
           message: '必填',
         },
       ],
-      date: [
+      coverImg: [
         {
           required: true,
           message: '必填',
-          trigger: 'change',
-          type: 'array',
         },
       ],
-      select: [
+      price: [
+        {
+          required: true,
+          message: '必填',
+        },
+      ],
+      gameId: [
         {
           required: true,
           message: '请选择',
         },
       ],
-      radio1: [],
-      radio2: [
-        {
-          required: true,
-          message: '请选择',
-        },
-      ],
-      checkbox: [],
-      remark: [],
     });
     // form
     const formRef = ref<typeof ElForm>();
@@ -133,6 +122,8 @@ export default defineComponent({
     const submitLoading = ref<boolean>(false);
     // 提交
     const handleSubmit = async () => {
+      console.log(modelRef);
+
       submitLoading.value = true;
       try {
         const valid: boolean = formRef.value ? await formRef.value.validate() : false;

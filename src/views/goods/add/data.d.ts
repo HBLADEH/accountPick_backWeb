@@ -14,6 +14,6 @@ export interface GoodsFormDataType {
   coverImg: string;
   price: number;
   content: string;
-  game_id: number;
-  channel_id: number;
+  gameId: string;
+  channelId: string;
 }
