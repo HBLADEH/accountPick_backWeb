@@ -15,8 +15,8 @@
             <el-form-item label="价格" prop="price">
               <el-input type="number" v-model="modelRef.price" placeholder="请输入" />
             </el-form-item>
-            <el-form-item label="所属游戏" prop="gameId">
-              <el-select v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%">
+            <el-form-item filterable label="所属游戏" prop="gameId">
+              <el-select @click="getGameList" v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%">
                 <el-option label="请选择" value="0"></el-option>
               </el-select>
             </el-form-item>
@@ -63,6 +63,7 @@ interface FormBasicPageSetupData {
   modelRef: GoodsFormDataType;
   rulesRef: any;
   formRef: typeof ElForm;
+  getGameList: () => void;
   resetFields: () => void;
   submitLoading: boolean;
   handleSubmit: () => Promise<void>;
@@ -114,6 +115,13 @@ export default defineComponent({
     });
     // form
     const formRef = ref<typeof ElForm>();
+
+    const getGameList = async () => {
+      const res: boolean = await store.dispatch('GamesFormBasic/getGameList');
+      const { data } = res;
+      console.log(res);
+    };
+
     // 重置
     const resetFields = () => {
       formRef.value && formRef.value.resetFields();
@@ -128,7 +136,7 @@ export default defineComponent({
       try {
         const valid: boolean = formRef.value ? await formRef.value.validate() : false;
         if (valid === true) {
-          const res: boolean = await store.dispatch('FormBasic/create', modelRef);
+          const res: boolean = await store.dispatch('GamesFormBasic/create', modelRef);
           if (res === true) {
             ElMessage.success('提交成功');
             resetFields();
@@ -144,6 +152,7 @@ export default defineComponent({
       modelRef,
       rulesRef,
       formRef: formRef as unknown as typeof ElForm,
+      getGameList,
       resetFields,
       submitLoading: submitLoading as unknown as boolean,
       handleSubmit,
