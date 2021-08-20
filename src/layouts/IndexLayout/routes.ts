@@ -100,25 +100,6 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
           },
         ]
       },
-      {
-        icon: 'editor',
-        title: 'index-layout.menu.component.editor',
-        path: 'editor',
-        redirect: '/component/editor/tuieditor',
-        component: BlankLayout,
-        children: [
-          {
-            title: 'index-layout.menu.component.editor.tui-editor',
-            path: 'tuieditor',
-            component: () => import('@/views/component/editor/tui-editor/index.vue'),
-          },
-          {
-            title: 'index-layout.menu.component.editor.ckeditor',
-            path: 'ckeditor',
-            component: () => import('@/views/component/editor/ckeditor/index.vue'),
-          }
-        ]
-      }
     ]
   },
 

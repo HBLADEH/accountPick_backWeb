@@ -13,7 +13,6 @@ export default {
   'index-layout.menu.component.icon.svg': 'IconSvg',
   'index-layout.menu.component.icon.font': 'IconFont',
   'index-layout.menu.component.editor': 'Editor',
-  'index-layout.menu.component.editor.tui-editor': 'tui-editor',
   'index-layout.menu.component.editor.ckeditor': 'CKEditor',
 
   'index-layout.menu.pages': 'Page sample',
