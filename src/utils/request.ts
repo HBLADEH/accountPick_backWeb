@@ -11,7 +11,7 @@ import { getToken, setToken } from '@/utils/localToken';
 export interface ResponseData {
     code: number;
     data?: any;
-    msg?: string;
+    message?: string;
     token?: string;
 }
 

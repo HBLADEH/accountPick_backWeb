@@ -9,6 +9,7 @@ export interface FormDataType {
   content: string;
 }
 
+
 export interface GoodsFormDataType {
   name: string;
   coverImg: string;
@@ -16,4 +17,9 @@ export interface GoodsFormDataType {
   content: string;
   gameId: string;
   channelId: string;
+}
+
+export interface SelectType {
+  label: string;
+  value: number;
 }

@@ -25,9 +25,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
   actions: {
     queryTableData: Action<StateType, StateType>;
     deleteTableData: Action<StateType, StateType>;
-    createTableData: Action<StateType, StateType>;
-    queryUpdateData: Action<StateType, StateType>;
-    updateTableData: Action<StateType, StateType>;
+    // createTableData: Action<StateType, StateType>;
+    // queryUpdateData: Action<StateType, StateType>;
+    // updateTableData: Action<StateType, StateType>;
   };
 }
 const initState: StateType = {
@@ -63,6 +63,7 @@ const StoreModel: ModuleType = {
       try {
         const response: ResponseData = await queryList(payload);
         const { data } = response;
+
         commit('setTableData', {
           ...initState.tableData,
           list: data.records || [],
@@ -85,36 +86,36 @@ const StoreModel: ModuleType = {
         return false;
       }
     },
-    async createTableData({ commit }, payload: Pick<TableListItem, "name" | "desc" | "href" | "type">) {
-      try {
-        await createData(payload);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-    async queryUpdateData({ commit }, payload: number) {
-      try {
-        const response: ResponseData = await detailData(payload);
-        const { data } = response;
-        commit('setUpdateData', {
-          ...initState.updateData,
-          ...data,
-        });
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-    async updateTableData({ commit }, payload: TableListItem) {
-      try {
-        const { id, ...params } = payload;
-        await updateData(id, { ...params });
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
+    // async createTableData({ commit }, payload: Pick<TableListItem, "name" | "desc" | "href" | "type">) {
+    //   try {
+    //     await createData(payload);
+    //     return true;
+    //   } catch (error) {
+    //     return false;
+    //   }
+    // },
+    // async queryUpdateData({ commit }, payload: number) {
+    //   try {
+    //     const response: ResponseData = await detailData(payload);
+    //     const { data } = response;
+    //     commit('setUpdateData', {
+    //       ...initState.updateData,
+    //       ...data,
+    //     });
+    //     return true;
+    //   } catch (error) {
+    //     return false;
+    //   }
+    // },
+    // async updateTableData({ commit }, payload: TableListItem) {
+    //   try {
+    //     const { id, ...params } = payload;
+    //     await updateData(id, { ...params });
+    //     return true;
+    //   } catch (error) {
+    //     return false;
+    //   }
+    // },
   }
 };
 

@@ -16,9 +16,10 @@
               <el-input type="number" v-model="modelRef.price" placeholder="请输入" />
             </el-form-item>
             <el-form-item filterable label="所属游戏" prop="gameId">
-              <el-select @click="getGameList" v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%">
-                <el-option label="请选择" value="0"></el-option>
-              </el-select>
+              <!-- <el-select @click="getGameList" v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%"> -->
+              <!-- <el-option label="请选择" value="0"></el-option> -->
+              <!-- </el-select> -->
+              <el-select-v2 @click="getGameList" :options="options" placeholder="请选择" style="width: 200px;" />
             </el-form-item>
             <el-form-item label="所属渠道" prop="channelId">
               <el-select v-model="modelRef.channelId" placeholder="请选择" clearable style="width:100%">
@@ -52,10 +53,10 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import { ElForm, ElMessage } from 'element-plus';
-import { GoodsFormDataType } from './data.d';
+import { GoodsFormDataType, SelectType } from './data.d';
 import { StateType as FormStateType } from './store';
 import CKEditor from '@/components/CKEditor/index.vue';
 
@@ -63,6 +64,7 @@ interface FormBasicPageSetupData {
   modelRef: GoodsFormDataType;
   rulesRef: any;
   formRef: typeof ElForm;
+  options: SelectType[];
   getGameList: () => void;
   resetFields: () => void;
   submitLoading: boolean;
@@ -116,9 +118,13 @@ export default defineComponent({
     // form
     const formRef = ref<typeof ElForm>();
 
+    const options = computed<SelectType[]>(() => store.state.FormBasic.gameList);
+
     const getGameList = async () => {
       const res: boolean = await store.dispatch('GamesFormBasic/getGameList');
-      const { data } = res;
+      // data.map((v: { name: any; id: any; }) => {
+      //   return { label: v.name, value: v.id };
+      // });
       console.log(res);
     };
 
@@ -147,11 +153,14 @@ export default defineComponent({
       }
       submitLoading.value = false;
     };
-
+    onMounted(() => {
+      getGameList();
+    });
     return {
       modelRef,
       rulesRef,
       formRef: formRef as unknown as typeof ElForm,
+      options: options as unknown as SelectType[],
       getGameList,
       resetFields,
       submitLoading: submitLoading as unknown as boolean,
