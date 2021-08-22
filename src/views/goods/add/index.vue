@@ -15,14 +15,14 @@
             <el-form-item label="价格" prop="price">
               <el-input type="number" v-model="modelRef.price" placeholder="请输入" />
             </el-form-item>
-            <el-form-item filterable label="所属游戏" prop="gameId">
+            <el-form-item label="所属游戏" prop="gameId">
               <!-- <el-select @click="getGameList" v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%"> -->
               <!-- <el-option label="请选择" value="0"></el-option> -->
               <!-- </el-select> -->
-              <el-select-v2 @click="getGameList" :options="options" placeholder="请选择" style="width: 200px;" />
+              <el-select-v2 @visible-change="getGameList" @change="getChannelList" :options="options" v-model="modelRef.gameId" placeholder="请选择" filterable style="width:100%" />
             </el-form-item>
             <el-form-item label="所属渠道" prop="channelId">
-              <el-select v-model="modelRef.channelId" placeholder="请选择" clearable style="width:100%">
+              <el-select v-model="modelRef.channelId" placeholder="请选择" style="width:100%">
                 <el-option label="请选择" value="0"></el-option>
               </el-select>
             </el-form-item>
@@ -66,6 +66,7 @@ interface FormBasicPageSetupData {
   formRef: typeof ElForm;
   options: SelectType[];
   getGameList: () => void;
+  getChannelList: () => void;
   resetFields: () => void;
   submitLoading: boolean;
   handleSubmit: () => Promise<void>;
@@ -77,7 +78,7 @@ export default defineComponent({
     CKEditor,
   },
   setup(): FormBasicPageSetupData {
-    const store = useStore<{ FormBasic: FormStateType }>();
+    const store = useStore<{ GamesFormBasic: FormStateType }>();
 
     // 表单值
     const modelRef = reactive<GoodsFormDataType>({
@@ -108,24 +109,29 @@ export default defineComponent({
           message: '必填',
         },
       ],
-      gameId: [
-        {
-          required: true,
-          message: '请选择',
-        },
-      ],
+      // gameId: [
+      //   {
+      //     required: true,
+      //     message: '请选择',
+      //   },
+      // ],
     });
     // form
     const formRef = ref<typeof ElForm>();
 
-    const options = computed<SelectType[]>(() => store.state.FormBasic.gameList);
+    const options = computed<SelectType[]>(() => store.state.GamesFormBasic.gameList);
 
     const getGameList = async () => {
-      const res: boolean = await store.dispatch('GamesFormBasic/getGameList');
-      // data.map((v: { name: any; id: any; }) => {
-      //   return { label: v.name, value: v.id };
-      // });
-      console.log(res);
+      // const res: boolean = await store.dispatch('GamesFormBasic/getGameList');
+      try {
+        if (options.value.length == 0) store.dispatch('GamesFormBasic/getGameList');
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    const getChannelList = async () => {
+      console.log(modelRef.gameId);
     };
 
     // 重置
@@ -153,15 +159,13 @@ export default defineComponent({
       }
       submitLoading.value = false;
     };
-    onMounted(() => {
-      getGameList();
-    });
     return {
       modelRef,
       rulesRef,
       formRef: formRef as unknown as typeof ElForm,
       options: options as unknown as SelectType[],
       getGameList,
+      getChannelList,
       resetFields,
       submitLoading: submitLoading as unknown as boolean,
       handleSubmit,

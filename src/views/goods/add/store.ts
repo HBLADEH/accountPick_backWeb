@@ -32,7 +32,7 @@ const StoreModel: ModuleType = {
     },
     mutations: {
         setGameList(state, payload) {
-            state.gameList = payload
+            state.gameList = payload.gameList
         }
     },
     actions: {
