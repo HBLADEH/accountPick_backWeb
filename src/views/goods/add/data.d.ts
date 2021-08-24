@@ -19,7 +19,12 @@ export interface GoodsFormDataType {
   channelId: string;
 }
 
+// export interface SelectType {
+//   label: string;
+//   value: number;
+// }
+
 export interface SelectType {
-  label: string;
-  value: number;
+  name: string;
+  id: number;
 }

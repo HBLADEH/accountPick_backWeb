@@ -8,6 +8,13 @@ export async function getGameList(): Promise<any> {
   });
 }
 
+export async function getChannelListByGameId(gameId: number): Promise<any> {
+  return request({
+    url: '/channelsByGame/' + gameId,
+    method: 'GET',
+  });
+}
+
 
 export async function createData(params: FormDataType): Promise<any> {
   return request({

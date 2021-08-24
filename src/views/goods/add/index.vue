@@ -16,14 +16,15 @@
               <el-input type="number" v-model="modelRef.price" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="所属游戏" prop="gameId">
-              <!-- <el-select @click="getGameList" v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%"> -->
-              <!-- <el-option label="请选择" value="0"></el-option> -->
-              <!-- </el-select> -->
-              <el-select-v2 @visible-change="getGameList" @change="getChannelList" :options="options" v-model="modelRef.gameId" placeholder="请选择" filterable style="width:100%" />
+              <el-select @visible-change="getGameList" @change="getChannelList" v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%">
+                <el-option v-for="item in gameList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                <!-- <el-option label="请选择" value="0"></el-option> -->
+              </el-select>
+              <!-- <el-select-v2 @visible-change="getGameList" @change="getChannelList" :options="gameList" v-model="modelRef.gameId" placeholder="请选择" filterable style="width:100%" /> -->
             </el-form-item>
             <el-form-item label="所属渠道" prop="channelId">
-              <el-select v-model="modelRef.channelId" placeholder="请选择" style="width:100%">
-                <el-option label="请选择" value="0"></el-option>
+              <el-select v-model="modelRef.channelId" :disabled="!channelShow" multiple placeholder="请选择" style="width:100%">
+                <el-option v-for="item in channelList" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -53,7 +54,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
+import { computed, defineComponent, reactive, Ref, ref } from 'vue';
 import { useStore } from 'vuex';
 import { ElForm, ElMessage } from 'element-plus';
 import { GoodsFormDataType, SelectType } from './data.d';
@@ -64,7 +65,9 @@ interface FormBasicPageSetupData {
   modelRef: GoodsFormDataType;
   rulesRef: any;
   formRef: typeof ElForm;
-  options: SelectType[];
+  gameList: SelectType[];
+  channelList: SelectType[];
+  channelShow: boolean;
   getGameList: () => void;
   getChannelList: () => void;
   resetFields: () => void;
@@ -119,19 +122,25 @@ export default defineComponent({
     // form
     const formRef = ref<typeof ElForm>();
 
-    const options = computed<SelectType[]>(() => store.state.GamesFormBasic.gameList);
-
-    const getGameList = async () => {
+    const gameList = computed<SelectType[]>(() => store.state.GamesFormBasic.gameList);
+    let getGameList = async () => {
       // const res: boolean = await store.dispatch('GamesFormBasic/getGameList');
-      try {
-        if (options.value.length == 0) store.dispatch('GamesFormBasic/getGameList');
-      } catch (error) {
-        console.log('error', error);
-      }
+      if (gameList.value.length == 0) store.dispatch('GamesFormBasic/getGameList');
     };
 
+    let channelShow = ref<boolean>(false);
+    // let channelList: SelectType[] = store.state.GamesFormBasic.channelList;
+    let channelList = computed<SelectType[]>(() => store.state.GamesFormBasic.channelList);
+
     const getChannelList = async () => {
-      console.log(modelRef.gameId);
+      if (modelRef.gameId == null || modelRef.gameId == '') {
+        store.state.GamesFormBasic.channelList = [];
+        modelRef.channelId = '';
+        channelShow.value = false;
+      } else {
+        channelShow.value = true;
+        store.dispatch('GamesFormBasic/getChannelListByGameId', modelRef.gameId);
+      }
     };
 
     // 重置
@@ -163,7 +172,9 @@ export default defineComponent({
       modelRef,
       rulesRef,
       formRef: formRef as unknown as typeof ElForm,
-      options: options as unknown as SelectType[],
+      gameList: gameList as unknown as SelectType[],
+      channelList: channelList as unknown as SelectType[],
+      channelShow: channelShow as unknown as boolean,
       getGameList,
       getChannelList,
       resetFields,
