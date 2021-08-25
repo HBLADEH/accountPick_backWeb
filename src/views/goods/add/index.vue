@@ -1,7 +1,6 @@
 <template>
   <div class="indexlayout-main-conent">
     <el-form :model="modelRef" :rules="rulesRef" ref="formRef" label-width="100px">
-
       <el-card shadow="never" class="cus-card">
         <el-row>
           <el-col :xs="0" :sm="2" :md="4" :lg="6" :xl="6" class="border-solid-transparent"></el-col>
@@ -29,12 +28,10 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="商品内容" prop="content">
-              <CKEditor v-model="modelRef.content" />
-            </el-form-item>
-            <el-form-item label="商品预览">
-              <div v-html="modelRef.content"></div>
-            </el-form-item>
+            <label for="content" class="el-form-item__label">商品内容</label>
+            <CKEditor v-model="modelRef.content" />
+            <label for="content" class="el-form-item__label">商品预览</label>
+            <div class="goods-demo" v-html="modelRef.content"></div>
           </el-col>
           <el-col :xs="0" :sm="2" :md="4" :lg="6" :xl="6" class="border-solid-transparent"></el-col>
           <el-col :xs="24" :sm="20" :md="16" :lg="12" :xl="12">
@@ -187,5 +184,14 @@ export default defineComponent({
 <style lang="scss">
 .form-basic-width100.el-input__inner {
   width: 100%;
+}
+.goods-label {
+  text-align: left;
+  margin-bottom: 10px;
+}
+.goods-demo {
+  border: 1px solid var(--ck-color-base-border);
+  padding: 10px;
+  min-height: 100px;
 }
 </style>
