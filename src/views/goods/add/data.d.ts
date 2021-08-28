@@ -13,7 +13,7 @@ export interface FormDataType {
 export interface GoodsFormDataType {
   name: string;
   coverImg: string;
-  price: number;
+  price: string;
   content: string;
   gameId: string;
   channelId: string;

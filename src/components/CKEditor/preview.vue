@@ -1,14 +1,12 @@
 <template>
   <div class="document-editor">
-    <ckeditor :editor="DecoupledEditor" v-model="editorData" :config="{toolbar: toolbars, language:language }" :disabled="disabled" @ready="onReady"></ckeditor>
+    <ckeditor :editor="DecoupledEditor" v-model="editorData" :disabled="disabled"></ckeditor>
   </div>
 </template>
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue';
-import request from '@/utils/request';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
-// import ImageEditor from '@ckeditor/ckeditor5-image';
 import '@ckeditor/ckeditor5-build-decoupled-document/build/translations/zh-cn';
 import { getLocale } from '@/utils/i18n';
 
@@ -19,36 +17,7 @@ const languageLabels: { [key: string]: string } = {
 };
 
 const CKEditorConfig = {
-  toolbar: [
-    'heading',
-    '|',
-    'fontfamily',
-    'fontsize',
-    'fontColor',
-    'fontBackgroundColor',
-    '|',
-    'bold',
-    'italic',
-    'underline',
-    'strikethrough',
-    '|',
-    'alignment',
-    '|',
-    'numberedList',
-    'bulletedList',
-    '|',
-    'indent',
-    'outdent',
-    '|',
-    'link',
-    'blockquote',
-    'imageUpload',
-    'insertTable',
-    'mediaEmbed',
-    '|',
-    'undo',
-    'redo',
-  ],
+  toolbar: [],
   // language: 'zh-cn'
   language: languageLabels[getLocale()],
 };
@@ -57,11 +26,10 @@ interface CKEditorSetupData {
   DecoupledEditor: any;
   language: string;
   editorData: string;
-  onReady: (editor: any) => void;
 }
 
 export default defineComponent({
-  name: 'CKEditor',
+  name: 'CKEditorPreview',
   props: {
     modelValue: {
       type: String,
@@ -88,52 +56,10 @@ export default defineComponent({
       },
     });
 
-    // 加载完成
-    const onReady = (editor: any) => {
-      // console.log( 'Editor is ready to use!', editor );
-      editor.ui
-        .getEditableElement()
-        .parentElement.insertBefore(editor.ui.view.toolbar.element, editor.ui.getEditableElement());
-
-      editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
-        //let val = editor.getData();
-        return {
-          upload: async () => {
-            return await loader.file.then((f: any) => {
-              // console.log("file:", f);
-
-              const param = new FormData();
-              param.append('file', f);
-
-              return new Promise((resolve, reject) => {
-                request({
-                  headers: { 'Content-Type': 'multipart/form-data' },
-                  url: '/goods/uploadContentImg',
-                  method: 'POST',
-                  data: param,
-                })
-                  .then((res) => {
-                    const { data } = res;
-                    resolve({
-                      default: data.url || '',
-                    });
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    reject(err);
-                  });
-              });
-            });
-          },
-        };
-      };
-    };
-
     return {
       DecoupledEditor,
       language: CKEditorConfig.language,
       editorData: editorData as unknown as string,
-      onReady,
     };
   },
 });

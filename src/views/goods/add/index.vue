@@ -27,11 +27,11 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col>
+          <el-col style="margin-bottom: 10px">
             <label for="content" class="el-form-item__label">商品内容</label>
             <CKEditor v-model="modelRef.content" />
             <label for="content" class="el-form-item__label">商品预览</label>
-            <div class="goods-demo" v-html="modelRef.content"></div>
+            <CKEditorPreview v-model="contentPreview" :toolbars="[]" :disabled="true" />
           </el-col>
           <el-col :xs="0" :sm="2" :md="4" :lg="6" :xl="6" class="border-solid-transparent"></el-col>
           <el-col :xs="24" :sm="20" :md="16" :lg="12" :xl="12">
@@ -51,16 +51,18 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, Ref, ref } from 'vue';
+import { computed, defineComponent, reactive, Ref, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { ElForm, ElMessage } from 'element-plus';
 import { GoodsFormDataType, SelectType } from './data.d';
 import { StateType as FormStateType } from './store';
 import CKEditor from '@/components/CKEditor/index.vue';
+import CKEditorPreview from '@/components/CKEditor/preview.vue';
 
 interface FormBasicPageSetupData {
   modelRef: GoodsFormDataType;
   rulesRef: any;
+  contentPreview: string;
   formRef: typeof ElForm;
   gameList: SelectType[];
   channelList: SelectType[];
@@ -76,6 +78,7 @@ export default defineComponent({
   name: 'FormBasicPage',
   components: {
     CKEditor,
+    CKEditorPreview,
   },
   setup(): FormBasicPageSetupData {
     const store = useStore<{ GamesFormBasic: FormStateType }>();
@@ -84,7 +87,7 @@ export default defineComponent({
     const modelRef = reactive<GoodsFormDataType>({
       name: '',
       coverImg: '',
-      price: 0.0,
+      price: '',
       content: '',
       gameId: '',
       channelId: '',
@@ -139,7 +142,14 @@ export default defineComponent({
         store.dispatch('GamesFormBasic/getChannelListByGameId', modelRef.gameId);
       }
     };
+    let contentPreview = ref('');
 
+    watch(
+      () => modelRef.content,
+      () => {
+        contentPreview.value = modelRef.content;
+      }
+    );
     // 重置
     const resetFields = () => {
       formRef.value && formRef.value.resetFields();
@@ -169,6 +179,7 @@ export default defineComponent({
       modelRef,
       rulesRef,
       formRef: formRef as unknown as typeof ElForm,
+      contentPreview: contentPreview as unknown as string,
       gameList: gameList as unknown as SelectType[],
       channelList: channelList as unknown as SelectType[],
       channelShow: channelShow as unknown as boolean,
