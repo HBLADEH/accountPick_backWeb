@@ -3,7 +3,7 @@
  * @author LiQingSong
  */
 import { Component } from 'vue';
-import { RouteLocation, RouteLocationRaw} from 'vue-router';
+import { RouteLocation, RouteLocationRaw } from 'vue-router';
 import { isExternal } from './validate';
 
 /**
@@ -55,7 +55,7 @@ interface RoutesDataItemComponent extends RoutesDataItemCore {
   // 组件页面
   component: Component | Promise<Component>;
 }
-interface RoutesDataItemRedirect extends RoutesDataItemCore{
+interface RoutesDataItemRedirect extends RoutesDataItemCore {
   // 跳转地址
   redirect: RouteLocationRaw | ((to: RouteLocation) => RouteLocationRaw);
   // 组件页面
@@ -145,7 +145,7 @@ export const setRoutePathForParent = (pathname: string, parentPath = '/', headSt
  * @param pathname path[]
  * @param routesData routes
  */
-export const getPathsTheRoutes = ( pathname: string[], routesData: RoutesDataItem[]): RoutesDataItem[] => {
+export const getPathsTheRoutes = (pathname: string[], routesData: RoutesDataItem[]): RoutesDataItem[] => {
   const routeItem: RoutesDataItem[] = [];
 
   for (let index = 0, len = pathname.length; index < len; index += 1) {
@@ -169,7 +169,6 @@ export const getPathsTheRoutes = ( pathname: string[], routesData: RoutesDataIte
 export const getBreadcrumbRoutes = (route: RoutesDataItem, pathname: string[], routesData: RoutesDataItem[]): BreadcrumbType[] => {
   if (!route.breadcrumb) {
     const routePaths = getPathsTheRoutes(pathname, routesData);
-
     return route.breadcrumb === false ? routePaths : [...routePaths, route];
   }
 
@@ -209,7 +208,7 @@ export const vueRoutes = (routesData: RoutesDataItem[], parentPath = '/', headSt
     const itemChildren = children || [];
     const newItem: RoutesDataItem = { ...other };
     newItem.path = setRoutePathForParent(newItem.path, parentPath, headStart);
-    
+
     if (item.children) {
       newItem.children = [
         ...vueRoutes(itemChildren, newItem.path, headStart),
@@ -232,15 +231,15 @@ export const hasPermissionRouteRoles = (userRoles: string[], roles?: string | st
     return true;
   }
 
-  if(typeof roles === 'undefined') {
+  if (typeof roles === 'undefined') {
     return true;
   }
 
   if (typeof roles === 'string') {
     return userRoles.includes(roles);
-  } 
+  }
 
-  if(roles instanceof Array && roles.length > 0) {
+  if (roles instanceof Array && roles.length > 0) {
     return roles.some(role => userRoles.includes(role));
   }
 
@@ -270,10 +269,10 @@ export const hasPermission = (roles: string[], route: RoutesDataItem): boolean =
  * @param roles 用户的权限
  * @param routes 框架对应路由
  */
-export const getPermissionMenuData = ( roles: string[], routes: RoutesDataItem[]): RoutesDataItem[] => {
+export const getPermissionMenuData = (roles: string[], routes: RoutesDataItem[]): RoutesDataItem[] => {
   const menu: RoutesDataItem[] = [];
   for (let index = 0, len = routes.length; index < len; index += 1) {
-    const element = {...routes[index]};
+    const element = { ...routes[index] };
     if (hasPermission(roles, element)) {
       if (element.children) {
         element.children = getPermissionMenuData(roles, element.children);

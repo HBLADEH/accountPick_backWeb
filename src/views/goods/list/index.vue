@@ -68,11 +68,14 @@
                         return (pagination.current - 1) * pagination.pageSize + index + 1;
                     }" width="80">
         </el-table-column> -->
-        <el-table-column label="序号" prop="id">
+        <el-table-column label="序号" prop="id" width="55">
         </el-table-column>
         <el-table-column label="名称" prop="name">
         </el-table-column>
         <el-table-column label="封面图" prop="coverImg">
+          <template #default="{row}">
+            <el-image style="width: 100px; height: 100px" :src="row.coverImg" fit="cover"></el-image>
+          </template>
         </el-table-column>
         <el-table-column label="游戏名称" prop="gameName">
         </el-table-column>
@@ -116,6 +119,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ElMessageBox, ElMessage, ElForm } from 'element-plus';
 import CreateForm from './components/CreateForm.vue';
@@ -159,6 +163,8 @@ export default defineComponent({
     TypeSelect,
   },
   setup(): GoodsSearchTablePageSetupData {
+    const router = useRouter();
+
     const store = useStore<{ GoodsSearchTable: ListStateType }>();
 
     // 列表数据
@@ -173,7 +179,7 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const getList = async (current: number): Promise<void> => {
       loading.value = true;
-      console.log(store.state.GoodsSearchTable.tableData);
+      // console.log(store.state.GoodsSearchTable.tableData);
 
       await store.dispatch('GoodsSearchTable/queryTableData', {
         pageSize: pagination.value.pageSize,
@@ -231,12 +237,7 @@ export default defineComponent({
     );
     const detailUpdateLoading = ref<number[]>([]);
     const detailUpdateData = async (id: number) => {
-      detailUpdateLoading.value = [id];
-      const res: boolean = await store.dispatch('GoodsSearchTable/queryUpdateData', id);
-      if (res === true) {
-        setUpdateFormVisible(true);
-      }
-      detailUpdateLoading.value = [];
+      router.push({ path: '/goods/edit', query: { id: id } });
     };
 
     // 删除 loading

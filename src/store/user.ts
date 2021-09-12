@@ -61,6 +61,7 @@ const StoreModel: ModuleType = {
       try {
         const response: ResponseData = await queryCurrent();
         const { data } = response;
+        data.roles = ['admin'] // 获取最高权限
         commit('saveCurrentUser', data || {});
         return true;
       } catch (error) {

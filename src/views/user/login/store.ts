@@ -42,7 +42,7 @@ const StoreModel: ModuleType = {
                 const { data } = response;
                 setToken(data.token || '');
                 status = 'ok';
-            } catch (error) {
+            } catch (error: any) {
                 if (error.message && error.message === 'CustomError') {
                     status = 'error';
                 }

@@ -43,8 +43,8 @@
               <el-button type="primary" @click="handleSubmit" :loading="submitLoading">
                 提交
               </el-button>
-              <el-button @click="resetFields">
-                重置
+              <el-button @click="goBack">
+                返回
               </el-button>
             </el-form-item>
           </el-col>
@@ -55,7 +55,8 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, Ref, ref, watch } from 'vue';
+import { computed, defineComponent, reactive, Ref, ref, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ElForm, ElMessage } from 'element-plus';
 import { GoodsFormDataType, SelectType } from './data.d';
@@ -73,7 +74,8 @@ interface FormBasicPageSetupData {
   channelShow: boolean;
   getGameList: () => void;
   getChannelList: () => void;
-  resetFields: () => void;
+  goBack: () => void;
+  // resetFields: () => void;
   handleAvatarSuccess: (res: any, file: any) => void;
   beforeAvatarUpload: (file: any) => void;
   submitLoading: boolean;
@@ -81,13 +83,15 @@ interface FormBasicPageSetupData {
 }
 
 export default defineComponent({
-  name: 'GoodsAddPage',
+  name: 'GoodsEditPage',
   components: {
     CKEditor,
     CKEditorPreview,
   },
+
   setup(): FormBasicPageSetupData {
-    const store = useStore<{ GamesFormAddBasic: FormStateType }>();
+    const store = useStore<{ GamesFormBasic: FormStateType }>();
+    const router = useRouter();
 
     // 表单值
     const modelRef = reactive<GoodsFormDataType>({
@@ -125,27 +129,35 @@ export default defineComponent({
       //   },
       // ],
     });
+
+    onMounted(() => {
+      let query: any = router.currentRoute.value.query;
+      if (query == null || query == {} || query.id == undefined) {
+        router.push('/');
+      }
+      // const res: boolean = store.dispatch('ListTable/updateTableData');
+    });
     // form
     const formRef = ref<typeof ElForm>();
 
-    const gameList = computed<SelectType[]>(() => store.state.GamesFormAddBasic.gameList);
+    const gameList = computed<SelectType[]>(() => store.state.GamesFormBasic.gameList);
     let getGameList = async () => {
-      // const res: boolean = await store.dispatch('GamesFormAddBasic/getGameList');
-      if (gameList.value.length == 0) store.dispatch('GamesFormAddBasic/getGameList');
+      // const res: boolean = await store.dispatch('GamesFormBasic/getGameList');
+      if (gameList.value.length == 0) store.dispatch('GamesFormBasic/getGameList');
     };
 
     let channelShow = ref<boolean>(false);
-    // let channelList: SelectType[] = store.state.GamesFormAddBasic.channelList;
-    let channelList = computed<SelectType[]>(() => store.state.GamesFormAddBasic.channelList);
+    // let channelList: SelectType[] = store.state.GamesFormBasic.channelList;
+    let channelList = computed<SelectType[]>(() => store.state.GamesFormBasic.channelList);
 
     const getChannelList = async () => {
       if (modelRef.gameId == null || modelRef.gameId == '') {
-        store.state.GamesFormAddBasic.channelList = [];
+        store.state.GamesFormBasic.channelList = [];
         modelRef.channelId = '';
         channelShow.value = false;
       } else {
         channelShow.value = true;
-        store.dispatch('GamesFormAddBasic/getChannelListByGameId', modelRef.gameId);
+        store.dispatch('GamesFormBasic/getChannelListByGameId', modelRef.gameId);
       }
     };
 
@@ -180,10 +192,16 @@ export default defineComponent({
         contentPreview.value = modelRef.content;
       }
     );
-    // 重置
-    const resetFields = () => {
-      formRef.value && formRef.value.resetFields();
+
+    // 返回首页
+    const goBack = () => {
+      router.go(-1);
     };
+
+    // 重置
+    // const resetFields = () => {
+    //   formRef.value && formRef.value.resetFields();
+    // };
     // 提交loading
     const submitLoading = ref<boolean>(false);
     // 提交
@@ -194,10 +212,10 @@ export default defineComponent({
       try {
         const valid: boolean = formRef.value ? await formRef.value.validate() : false;
         if (valid === true) {
-          const res: boolean = await store.dispatch('GamesFormAddBasic/create', modelRef);
+          const res: boolean = await store.dispatch('GamesFormBasic/create', modelRef);
           if (res === true) {
             ElMessage.success('提交成功');
-            resetFields();
+            // resetFields();
           }
         }
       } catch (error) {
@@ -215,7 +233,8 @@ export default defineComponent({
       channelShow: channelShow as unknown as boolean,
       getGameList,
       getChannelList,
-      resetFields,
+      // resetFields,
+      goBack,
       handleAvatarSuccess,
       beforeAvatarUpload,
       submitLoading: submitLoading as unknown as boolean,

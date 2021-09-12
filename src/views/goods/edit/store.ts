@@ -30,7 +30,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'GamesFormAddBasic',
+    name: 'GamesFormEditBasic',
     state: {
         ...initState
     },

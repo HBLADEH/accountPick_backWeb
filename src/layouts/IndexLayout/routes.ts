@@ -60,16 +60,23 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'page',
+        icon: '',
         title: 'index-layout.menu.goods.list',
         path: 'list',
         component: () => import('@/views/goods/list/index.vue')
       },
       {
-        icon: 'page',
+        icon: '',
         title: 'index-layout.menu.goods.add',
         path: 'add',
         component: () => import('@/views/goods/add/index.vue')
+      },
+      {
+        hidden: true,
+        icon: '',
+        title: 'index-layout.menu.goods.edit',
+        path: 'edit',
+        component: () => import('@/views/goods/edit/index.vue'),
       }
     ]
   },

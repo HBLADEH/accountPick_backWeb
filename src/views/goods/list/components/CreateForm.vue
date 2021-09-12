@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :close-on-click-modal="false" :close-on-press-escape="false" title="新增" width="500px" :model-value="visible" @close="onCancel">
+  <el-dialog :close-on-click-modal="false" :close-on-press-escape="false" title="新增" width="100%" :model-value="visible" @close="onCancel">
     <template #footer>
       <el-button key="back" @click="() => onCancel()">取消</el-button>
       <el-button key="submit" type="primary" :loading="onSubmitLoading" @click="onFinish">提交</el-button>

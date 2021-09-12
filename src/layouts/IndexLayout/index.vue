@@ -114,6 +114,7 @@ export default defineComponent({
     const breadCrumbs = computed<BreadcrumbType[]>(() =>
       getBreadcrumbRoutes(routeItem.value, routeParentPaths.value, menuData)
     );
+    console.log(getBreadcrumbRoutes(routeItem.value, routeParentPaths.value, menuData));
 
     // 设置title
     useTitle(routeItem);
