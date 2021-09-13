@@ -1,11 +1,12 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
-import { createGoods, getChannelListByGameId, getGameList } from './service';
-import { FormDataType, SelectType } from "./data.d";
+import { getGoodsById, getChannelListByGameId, getGameList } from './service';
+import { GoodsFormDataType, SelectType } from "./data.d";
 import { ResponseData } from '@/utils/request';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 export interface StateType {
+    goods: GoodsFormDataType
     gameList: SelectType[]
     channelList: SelectType[]
 }
@@ -13,28 +14,41 @@ export interface StateType {
 export interface ModuleType extends StoreModuleType<StateType> {
     state: StateType;
     mutations: {
+        setGoods: Mutation<StateType>
         setGameList: Mutation<StateType>
         setChannelList: Mutation<StateType>
     };
     actions: {
         getGameList: Action<StateType, StateType>;
         getChannelListByGameId: Action<StateType, StateType>;
-        create: Action<StateType, StateType>;
+        getGoodsById: Action<StateType, StateType>;
     };
 }
 
 const initState: StateType = {
+    goods: {
+        id: 0,
+        name: '',
+        coverImg: '',
+        price: '',
+        content: '',
+        gameId: '',
+        channelId: '',
+    },
     gameList: [],
     channelList: []
 };
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'GamesFormEditBasic',
+    name: 'GoodsFormEditBasic',
     state: {
         ...initState
     },
     mutations: {
+        setGoods(state, payload) {
+            state.goods = payload.goods
+        },
         setGameList(state, payload) {
             state.gameList = payload.gameList
         },
@@ -43,6 +57,16 @@ const StoreModel: ModuleType = {
         }
     },
     actions: {
+
+        async getGoodsById({ commit }, goodsId: number) {
+            const response: ResponseData = await getGoodsById(goodsId);
+            const { data } = response
+            commit('setGoods', {
+                ...initState,
+                goods: data
+            })
+        },
+
         async getGameList({ commit }) {
             try {
                 const response: ResponseData = await getGameList();
@@ -51,13 +75,6 @@ const StoreModel: ModuleType = {
                     ...initState,
                     gameList: data
                 })
-                // commit('setGameList', {
-                //     ...initState,
-                //     gameList: data.map((v: { id: number; name: string; }) => ({
-                //         value: v.id,
-                //         label: v.name
-                //     }))
-                // })
                 return true;
             } catch (error) {
                 return false;
@@ -76,15 +93,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-
-        async create({ commit }, payload: FormDataType) {
-            try {
-                await createGoods(payload);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        }
     }
 }
 

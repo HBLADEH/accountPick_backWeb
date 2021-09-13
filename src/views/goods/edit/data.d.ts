@@ -1,16 +1,16 @@
-export interface FormDataType {
-  title: string;
-  date: string[];
-  select: string;
-  radio1: string;
-  radio2: string;
-  checkbox: string[];
-  remark: string;
+export interface GoodsResponseDataType {
+  id: number;
+  name: string;
+  coverImg: string;
+  price: string;
   content: string;
+  gameId: string;
+  gameName: string;
+  channelId: string;
+  channelName: string;
 }
-
-
 export interface GoodsFormDataType {
+  id: number;
   name: string;
   coverImg: string;
   price: string;

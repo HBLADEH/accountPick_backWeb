@@ -15,10 +15,17 @@ export async function getChannelListByGameId(gameId: number): Promise<any> {
   });
 }
 
-export async function createGoods(params: FormDataType): Promise<any> {
+export async function getGoodsById(goodsId: number): Promise<any> {
   return request({
-    url: '/goods',
-    method: 'POST',
-    data: params,
+    url: '/goods/' + goodsId,
+    method: 'GET',
   });
 }
+
+// export async function createGoods(params: FormDataType): Promise<any> {
+//   return request({
+//     url: '/goods',
+//     method: 'POST',
+//     data: params,
+//   });
+// }

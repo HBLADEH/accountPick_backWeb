@@ -34,8 +34,6 @@
           <el-col style="margin-bottom: 10px">
             <label for="content" class="el-form-item__label">商品内容</label>
             <CKEditor v-model="modelRef.content" />
-            <label for="content" class="el-form-item__label">商品预览</label>
-            <CKEditorPreview v-model="contentPreview" :toolbars="[]" :disabled="true" />
           </el-col>
           <el-col :xs="0" :sm="2" :md="4" :lg="6" :xl="6" class="border-solid-transparent"></el-col>
           <el-col :xs="24" :sm="20" :md="16" :lg="12" :xl="12">
@@ -67,11 +65,11 @@ import CKEditorPreview from '@/components/CKEditor/preview.vue';
 interface FormBasicPageSetupData {
   modelRef: GoodsFormDataType;
   rulesRef: any;
-  contentPreview: string;
   formRef: typeof ElForm;
   gameList: SelectType[];
   channelList: SelectType[];
   channelShow: boolean;
+  getDataById: (id: number) => void;
   getGameList: () => void;
   getChannelList: () => void;
   goBack: () => void;
@@ -86,15 +84,15 @@ export default defineComponent({
   name: 'GoodsEditPage',
   components: {
     CKEditor,
-    CKEditorPreview,
   },
 
   setup(): FormBasicPageSetupData {
-    const store = useStore<{ GamesFormBasic: FormStateType }>();
+    const store = useStore<{ GoodsFormEditBasic: FormStateType }>();
     const router = useRouter();
 
     // 表单值
-    const modelRef = reactive<GoodsFormDataType>({
+    let modelRef = reactive({
+      id: 0,
       name: '',
       coverImg: '',
       price: '',
@@ -135,29 +133,45 @@ export default defineComponent({
       if (query == null || query == {} || query.id == undefined) {
         router.push('/');
       }
+      getDataById(query.id);
+
       // const res: boolean = store.dispatch('ListTable/updateTableData');
     });
+
+    const getDataById = async (id: number) => {
+      await store.dispatch('GoodsFormEditBasic/getGoodsById', id).then(() => {
+        const goods = store.state.GoodsFormEditBasic.goods;
+        modelRef.id = goods.id;
+        modelRef.name = goods.name;
+        modelRef.coverImg = goods.coverImg;
+        modelRef.price = goods.price;
+        modelRef.content = goods.content;
+        modelRef.gameId = goods.gameId;
+        modelRef.channelId = goods.channelId;
+        console.log(modelRef);
+      });
+    };
     // form
     const formRef = ref<typeof ElForm>();
 
-    const gameList = computed<SelectType[]>(() => store.state.GamesFormBasic.gameList);
+    const gameList = computed<SelectType[]>(() => store.state.GoodsFormEditBasic.gameList);
     let getGameList = async () => {
-      // const res: boolean = await store.dispatch('GamesFormBasic/getGameList');
-      if (gameList.value.length == 0) store.dispatch('GamesFormBasic/getGameList');
+      // const res: boolean = await store.dispatch('GoodsFormEditBasic/getGameList');
+      if (gameList.value.length == 0) store.dispatch('GoodsFormEditBasic/getGameList');
     };
 
     let channelShow = ref<boolean>(false);
-    // let channelList: SelectType[] = store.state.GamesFormBasic.channelList;
-    let channelList = computed<SelectType[]>(() => store.state.GamesFormBasic.channelList);
+    // let channelList: SelectType[] = store.state.GoodsFormEditBasic.channelList;
+    let channelList = computed<SelectType[]>(() => store.state.GoodsFormEditBasic.channelList);
 
     const getChannelList = async () => {
       if (modelRef.gameId == null || modelRef.gameId == '') {
-        store.state.GamesFormBasic.channelList = [];
+        store.state.GoodsFormEditBasic.channelList = [];
         modelRef.channelId = '';
         channelShow.value = false;
       } else {
         channelShow.value = true;
-        store.dispatch('GamesFormBasic/getChannelListByGameId', modelRef.gameId);
+        store.dispatch('GoodsFormEditBasic/getChannelListByGameId', modelRef.gameId);
       }
     };
 
@@ -185,14 +199,6 @@ export default defineComponent({
       return isJPG && isLt2M;
     };
 
-    let contentPreview = ref('');
-    watch(
-      () => modelRef.content,
-      () => {
-        contentPreview.value = modelRef.content;
-      }
-    );
-
     // 返回首页
     const goBack = () => {
       router.go(-1);
@@ -212,7 +218,7 @@ export default defineComponent({
       try {
         const valid: boolean = formRef.value ? await formRef.value.validate() : false;
         if (valid === true) {
-          const res: boolean = await store.dispatch('GamesFormBasic/create', modelRef);
+          const res: boolean = await store.dispatch('GoodsFormEditBasic/create', modelRef);
           if (res === true) {
             ElMessage.success('提交成功');
             // resetFields();
@@ -227,13 +233,12 @@ export default defineComponent({
       modelRef,
       rulesRef,
       formRef: formRef as unknown as typeof ElForm,
-      contentPreview: contentPreview as unknown as string,
       gameList: gameList as unknown as SelectType[],
       channelList: channelList as unknown as SelectType[],
       channelShow: channelShow as unknown as boolean,
+      getDataById,
       getGameList,
       getChannelList,
-      // resetFields,
       goBack,
       handleAvatarSuccess,
       beforeAvatarUpload,
