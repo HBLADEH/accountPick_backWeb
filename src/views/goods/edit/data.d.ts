@@ -1,22 +1,22 @@
 export interface GoodsResponseDataType {
-  id: number;
+  id?: number;
   name: string;
   coverImg: string;
   price: string;
   content: string;
-  gameId: string;
+  gameId?: number;
   gameName: string;
-  channelId: string;
+  channelId?: number;
   channelName: string;
 }
 export interface GoodsFormDataType {
-  id: number;
+  id?: number;
   name: string;
   coverImg: string;
   price: string;
   content: string;
-  gameId: string;
-  channelId: string;
+  gameId?: number;
+  channelId?: number;
 }
 
 // export interface SelectType {

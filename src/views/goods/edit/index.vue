@@ -11,7 +11,8 @@
             <el-form-item label="封面图片" prop="coverImg">
               <!-- <el-input v-model="modelRef.coverImg" placeholder="请输入" /> -->
               <el-upload class="avatar-uploader" action="/api/goods/uploadCoverImg" :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                <img v-if="modelRef.coverImg" :src="modelRef.coverImg" class="avatar" />
+                <!-- <img v-if="modelRef.coverImg" :src="modelRef.coverImg" class="avatar" /> -->
+                <el-image v-if="modelRef.coverImg" :src="modelRef.coverImg" fit="cover" class="avatar"></el-image>
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
@@ -26,7 +27,7 @@
               <!-- <el-select-v2 @visible-change="getGameList" @change="getChannelList" :options="gameList" v-model="modelRef.gameId" placeholder="请选择" filterable style="width:100%" /> -->
             </el-form-item>
             <el-form-item label="所属渠道" prop="channelId">
-              <el-select v-model="modelRef.channelId" :disabled="!channelShow" placeholder="请选择" style="width:100%">
+              <el-select v-model="modelRef.channelId" :disabled="!channelShow" placeholder="请选择" clearable style="width:100%">
                 <el-option v-for="item in channelList" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
@@ -57,10 +58,9 @@ import { computed, defineComponent, reactive, Ref, ref, watch, onMounted } from 
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ElForm, ElMessage } from 'element-plus';
-import { GoodsFormDataType, SelectType } from './data.d';
+import { GoodsResponseDataType, GoodsFormDataType, SelectType } from './data.d';
 import { StateType as FormStateType } from './store';
 import CKEditor from '@/components/CKEditor/index.vue';
-import CKEditorPreview from '@/components/CKEditor/preview.vue';
 
 interface FormBasicPageSetupData {
   modelRef: GoodsFormDataType;
@@ -73,7 +73,6 @@ interface FormBasicPageSetupData {
   getGameList: () => void;
   getChannelList: () => void;
   goBack: () => void;
-  // resetFields: () => void;
   handleAvatarSuccess: (res: any, file: any) => void;
   beforeAvatarUpload: (file: any) => void;
   submitLoading: boolean;
@@ -91,14 +90,11 @@ export default defineComponent({
     const router = useRouter();
 
     // 表单值
-    let modelRef = reactive({
-      id: 0,
+    let modelRef = reactive<GoodsFormDataType>({
       name: '',
       coverImg: '',
       price: '',
       content: '',
-      gameId: '',
-      channelId: '',
     });
     // 表单验证
     const rulesRef = reactive({
@@ -120,12 +116,6 @@ export default defineComponent({
           message: '必填',
         },
       ],
-      // gameId: [
-      //   {
-      //     required: true,
-      //     message: '请选择',
-      //   },
-      // ],
     });
 
     onMounted(() => {
@@ -134,30 +124,53 @@ export default defineComponent({
         router.push('/');
       }
       getDataById(query.id);
-
-      // const res: boolean = store.dispatch('ListTable/updateTableData');
     });
 
     const getDataById = async (id: number) => {
       await store.dispatch('GoodsFormEditBasic/getGoodsById', id).then(() => {
-        const goods = store.state.GoodsFormEditBasic.goods;
-        modelRef.id = goods.id;
-        modelRef.name = goods.name;
-        modelRef.coverImg = goods.coverImg;
-        modelRef.price = goods.price;
-        modelRef.content = goods.content;
-        modelRef.gameId = goods.gameId;
-        modelRef.channelId = goods.channelId;
-        console.log(modelRef);
+        const goods: GoodsResponseDataType = store.state.GoodsFormEditBasic.goods;
+        setModelRef(goods);
       });
     };
+
+    /* 设置表单值 */
+    const setModelRef = (data: GoodsResponseDataType) => {
+      modelRef.id = data.id;
+      modelRef.name = data.name;
+      modelRef.coverImg = data.coverImg;
+      modelRef.price = data.price;
+      modelRef.content = data.content;
+      console.log(data.gameId);
+
+      /**
+       * 动态下拉框
+       */
+      const gamesLength = gameList.value.length;
+      const channelLength = channelList.value.length;
+      if (data.gameId != null && data.gameName != null) {
+        if (gamesLength == 0) {
+          gameList.value.push({ name: data.gameName, id: Number(data.gameId) });
+        }
+        modelRef.gameId = Number(data.gameId);
+        channelShow.value = true;
+        getChannelList();
+      }
+      if (data.channelId != null && data.channelName != null) {
+        if (channelLength == 0) {
+          channelList.value.push({ name: data.channelName, id: Number(data.channelId) });
+        }
+        modelRef.channelId = Number(data.channelId);
+      }
+    };
+
     // form
     const formRef = ref<typeof ElForm>();
 
     const gameList = computed<SelectType[]>(() => store.state.GoodsFormEditBasic.gameList);
     let getGameList = async () => {
       // const res: boolean = await store.dispatch('GoodsFormEditBasic/getGameList');
-      if (gameList.value.length == 0) store.dispatch('GoodsFormEditBasic/getGameList');
+      if (gameList.value.length == 0 || (modelRef.gameId && gameList.value.length == 1))
+        store.dispatch('GoodsFormEditBasic/getGameList');
     };
 
     let channelShow = ref<boolean>(false);
@@ -165,9 +178,10 @@ export default defineComponent({
     let channelList = computed<SelectType[]>(() => store.state.GoodsFormEditBasic.channelList);
 
     const getChannelList = async () => {
-      if (modelRef.gameId == null || modelRef.gameId == '') {
+      modelRef.channelId = undefined;
+      if (modelRef.gameId == null || !modelRef.gameId) {
         store.state.GoodsFormEditBasic.channelList = [];
-        modelRef.channelId = '';
+        modelRef.channelId = undefined;
         channelShow.value = false;
       } else {
         channelShow.value = true;
@@ -204,24 +218,18 @@ export default defineComponent({
       router.go(-1);
     };
 
-    // 重置
-    // const resetFields = () => {
-    //   formRef.value && formRef.value.resetFields();
-    // };
-    // 提交loading
+    // 提交
     const submitLoading = ref<boolean>(false);
     // 提交
     const handleSubmit = async () => {
-      console.log(modelRef);
-
       submitLoading.value = true;
       try {
         const valid: boolean = formRef.value ? await formRef.value.validate() : false;
         if (valid === true) {
-          const res: boolean = await store.dispatch('GoodsFormEditBasic/create', modelRef);
+          const res: boolean = await store.dispatch('GoodsFormEditBasic/update', modelRef);
           if (res === true) {
-            ElMessage.success('提交成功');
-            // resetFields();
+            ElMessage.success('修改成功');
+            router.push('/goods/list');
           }
         }
       } catch (error) {

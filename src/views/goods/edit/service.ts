@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { FormDataType } from './data.d';
+import { GoodsFormDataType } from './data.d';
 
 export async function getGameList(): Promise<any> {
   return request({
@@ -22,10 +22,10 @@ export async function getGoodsById(goodsId: number): Promise<any> {
   });
 }
 
-// export async function createGoods(params: FormDataType): Promise<any> {
-//   return request({
-//     url: '/goods',
-//     method: 'POST',
-//     data: params,
-//   });
-// }
+export async function updateGoods(params: GoodsFormDataType): Promise<any> {
+  return request({
+    url: '/goods',
+    method: 'PUT',
+    data: params,
+  });
+}

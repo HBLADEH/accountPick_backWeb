@@ -1,12 +1,12 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
-import { getGoodsById, getChannelListByGameId, getGameList } from './service';
-import { GoodsFormDataType, SelectType } from "./data.d";
+import { getGoodsById, getChannelListByGameId, getGameList, updateGoods } from './service';
+import { GoodsResponseDataType, GoodsFormDataType, SelectType } from "./data.d";
 import { ResponseData } from '@/utils/request';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 export interface StateType {
-    goods: GoodsFormDataType
+    goods: GoodsResponseDataType
     gameList: SelectType[]
     channelList: SelectType[]
 }
@@ -22,6 +22,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getGameList: Action<StateType, StateType>;
         getChannelListByGameId: Action<StateType, StateType>;
         getGoodsById: Action<StateType, StateType>;
+        update: Action<StateType, StateType>;
     };
 }
 
@@ -32,8 +33,8 @@ const initState: StateType = {
         coverImg: '',
         price: '',
         content: '',
-        gameId: '',
-        channelId: '',
+        gameName: '',
+        channelName: '',
     },
     gameList: [],
     channelList: []
@@ -93,6 +94,14 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async update({ commit }, goods: GoodsFormDataType) {
+            try {
+                await updateGoods(goods);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
     }
 }
 
