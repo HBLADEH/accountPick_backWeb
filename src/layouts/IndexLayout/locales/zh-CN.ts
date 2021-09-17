@@ -13,6 +13,13 @@ export default {
   'index-layout.menu.goods.add': '添加商品',
   'index-layout.menu.goods.edit': '编辑商品',
 
+  'index-layout.menu.game': '游戏',
+  'index-layout.menu.game.list': '游戏列表',
+
+  'index-layout.menu.channel': '渠道',
+  'index-layout.menu.channel.list': '渠道列表',
+
+
   'index-layout.menu.component': '组件',
   'index-layout.menu.component.icon': '图标',
   'index-layout.menu.component.icon.svg': 'IconSvg',

@@ -80,6 +80,35 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       }
     ]
   },
+  {
+    icon: 'page',
+    title: 'index-layout.menu.game',
+    path: '/games',
+    redirect: '/games/list',
+    component: BlankLayout,
+    children: [
+      {
+        icon: '',
+        title: 'index-layout.menu.game.list',
+        path: 'list',
+        component: () => import('@/views/game/table/index.vue')
+      },
+    ]
+  }, {
+    icon: 'page',
+    title: 'index-layout.menu.channel',
+    path: '/channels',
+    redirect: '/channels/list',
+    component: BlankLayout,
+    children: [
+      {
+        icon: '',
+        title: 'index-layout.menu.channel.list',
+        path: 'list',
+        component: () => import('@/views/channel/table/index.vue')
+      },
+    ]
+  },
 
   {
     icon: 'components',

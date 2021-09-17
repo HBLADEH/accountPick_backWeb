@@ -78,7 +78,7 @@ const StoreModel: ModuleType = {
         return false;
       }
     },
-    async deleteTableData({ commit }, payload: number) {
+    async deleteTableData({ commit }, payload: number[]) {
       try {
         await removeData(payload);
         return true;

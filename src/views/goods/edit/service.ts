@@ -1,23 +1,9 @@
 import request from '@/utils/request';
-import { GoodsFormDataType } from './data.d';
-
-export async function getGameList(): Promise<any> {
-  return request({
-    url: '/games',
-    method: 'GET',
-  });
-}
-
-export async function getChannelListByGameId(gameId: number): Promise<any> {
-  return request({
-    url: '/channelsByGame/' + gameId,
-    method: 'GET',
-  });
-}
+import { GoodsFormDataType } from '../util/from/data';
 
 export async function getGoodsById(goodsId: number): Promise<any> {
   return request({
-    url: '/goods/' + goodsId,
+    url: `/goods/${goodsId}`,
     method: 'GET',
   });
 }

@@ -1,7 +1,10 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
-import { getGoodsById, getChannelListByGameId, getGameList, updateGoods } from './service';
-import { GoodsResponseDataType, GoodsFormDataType, SelectType } from "./data.d";
+import { getGoodsById, updateGoods } from './service';
+import { getChannelListByGameId, getGameList } from '../util/select/service'
+import { GoodsResponseDataType } from "./data.d";
+import { GoodsFormDataType } from "../util/from/data"
+import { SelectType } from "../util/select/data"
 import { ResponseData } from '@/utils/request';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */

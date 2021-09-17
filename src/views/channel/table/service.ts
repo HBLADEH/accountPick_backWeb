@@ -3,7 +3,7 @@ import { TableListQueryParams, TableListItem } from './data.d';
 
 export async function queryList(params?: TableListQueryParams): Promise<any> {
   return request({
-    url: '/goods/listAll',
+    url: '/games/listAll',
     method: 'get',
     params,
   });
@@ -11,7 +11,7 @@ export async function queryList(params?: TableListQueryParams): Promise<any> {
 
 export async function createData(params: Omit<TableListItem, 'id'>): Promise<any> {
   return request({
-    url: '/pages/list',
+    url: '/games',
     method: 'POST',
     data: params,
   });
@@ -19,21 +19,19 @@ export async function createData(params: Omit<TableListItem, 'id'>): Promise<any
 
 export async function updateData(id: number, params: Omit<TableListItem, 'id'>): Promise<any> {
   return request({
-    url: `/pages/list/${id}`,
+    url: `/games/${id}`,
     method: 'PUT',
     data: params,
   });
 }
 
-export async function removeData(id: number[]): Promise<any> {
+export async function removeData(id: number): Promise<any> {
   return request({
-    url: '/goods',
+    url: `/games/${id}`,
     method: 'delete',
-    data: id,
-
   });
 }
 
 export async function detailData(id: number): Promise<any> {
-  return request({ url: `/pages/list/${id}` });
+  return request({ url: `/games/${id}` });
 }

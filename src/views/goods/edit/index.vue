@@ -1,6 +1,6 @@
 <template>
   <div class="indexlayout-main-conent">
-    <el-form :model="modelRef" :rules="rulesRef" ref="formRef" label-width="100px">
+    <el-form v-loading="loading" :model="modelRef" :rules="rulesRef" ref="formRef" label-width="100px">
       <el-card shadow="never" class="cus-card">
         <el-row>
           <el-col :xs="0" :sm="2" :md="4" :lg="6" :xl="6" class="border-solid-transparent"></el-col>
@@ -20,14 +20,12 @@
               <el-input type="number" v-model="modelRef.price" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="所属游戏" prop="gameId">
-              <el-select @visible-change="getGameList" @change="getChannelList" v-model="modelRef.gameId" placeholder="请选择" clearable style="width:100%">
+              <el-select @visible-change="getGameList" @change="getChannelList" v-model="modelRef.gameId" placeholder="请选择" filterable clearable style="width:100%">
                 <el-option v-for="item in gameList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                <!-- <el-option label="请选择" value="0"></el-option> -->
               </el-select>
-              <!-- <el-select-v2 @visible-change="getGameList" @change="getChannelList" :options="gameList" v-model="modelRef.gameId" placeholder="请选择" filterable style="width:100%" /> -->
             </el-form-item>
             <el-form-item label="所属渠道" prop="channelId">
-              <el-select v-model="modelRef.channelId" :disabled="!channelShow" placeholder="请选择" clearable style="width:100%">
+              <el-select v-model="modelRef.channelId" :disabled="!channelShow" placeholder="请选择" filterable clearable style="width:100%">
                 <el-option v-for="item in channelList" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
@@ -58,14 +56,18 @@ import { computed, defineComponent, reactive, Ref, ref, watch, onMounted } from 
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ElForm, ElMessage } from 'element-plus';
-import { GoodsResponseDataType, GoodsFormDataType, SelectType } from './data.d';
+import { GoodsResponseDataType } from './data.d';
+import { GoodsFormDataType } from '../util/from/data';
+import { SelectType } from '../util/select/data';
 import { StateType as FormStateType } from './store';
+import { StateType as SelectStateType } from '../util/select/store';
 import CKEditor from '@/components/CKEditor/index.vue';
 
 interface FormBasicPageSetupData {
   modelRef: GoodsFormDataType;
   rulesRef: any;
   formRef: typeof ElForm;
+  loading: Ref<boolean>;
   gameList: SelectType[];
   channelList: SelectType[];
   channelShow: boolean;
@@ -87,8 +89,10 @@ export default defineComponent({
 
   setup(): FormBasicPageSetupData {
     const store = useStore<{ GoodsFormEditBasic: FormStateType }>();
-    const router = useRouter();
+    const storeSelect = useStore<{ GamesAndChannelSelect: SelectStateType }>();
 
+    const router = useRouter();
+    let loading = ref(true);
     // 表单值
     let modelRef = reactive<GoodsFormDataType>({
       name: '',
@@ -116,6 +120,12 @@ export default defineComponent({
           message: '必填',
         },
       ],
+      gameId: [
+        {
+          required: true,
+          message: '请选择',
+        },
+      ],
     });
 
     onMounted(() => {
@@ -130,6 +140,7 @@ export default defineComponent({
       await store.dispatch('GoodsFormEditBasic/getGoodsById', id).then(() => {
         const goods: GoodsResponseDataType = store.state.GoodsFormEditBasic.goods;
         setModelRef(goods);
+        loading.value = false;
       });
     };
 
@@ -166,26 +177,26 @@ export default defineComponent({
     // form
     const formRef = ref<typeof ElForm>();
 
-    const gameList = computed<SelectType[]>(() => store.state.GoodsFormEditBasic.gameList);
+    const gameList = computed<SelectType[]>(() => storeSelect.state.GamesAndChannelSelect.gameList);
     let getGameList = async () => {
-      // const res: boolean = await store.dispatch('GoodsFormEditBasic/getGameList');
       if (gameList.value.length == 0 || (modelRef.gameId && gameList.value.length == 1))
-        store.dispatch('GoodsFormEditBasic/getGameList');
+        storeSelect.dispatch('GamesAndChannelSelect/getGameList');
     };
 
     let channelShow = ref<boolean>(false);
-    // let channelList: SelectType[] = store.state.GoodsFormEditBasic.channelList;
-    let channelList = computed<SelectType[]>(() => store.state.GoodsFormEditBasic.channelList);
+    let channelList = computed<SelectType[]>(
+      () => storeSelect.state.GamesAndChannelSelect.channelList
+    );
 
     const getChannelList = async () => {
       modelRef.channelId = undefined;
       if (modelRef.gameId == null || !modelRef.gameId) {
-        store.state.GoodsFormEditBasic.channelList = [];
+        storeSelect.state.GamesAndChannelSelect.channelList = [];
         modelRef.channelId = undefined;
         channelShow.value = false;
       } else {
         channelShow.value = true;
-        store.dispatch('GoodsFormEditBasic/getChannelListByGameId', modelRef.gameId);
+        storeSelect.dispatch('GamesAndChannelSelect/getChannelListByGameId', modelRef.gameId);
       }
     };
 
@@ -223,6 +234,7 @@ export default defineComponent({
     // 提交
     const handleSubmit = async () => {
       submitLoading.value = true;
+      if (!modelRef.channelId) modelRef.channelId = Number(null); // 渠道为空的时候也传空
       try {
         const valid: boolean = formRef.value ? await formRef.value.validate() : false;
         if (valid === true) {
@@ -241,6 +253,7 @@ export default defineComponent({
       modelRef,
       rulesRef,
       formRef: formRef as unknown as typeof ElForm,
+      loading,
       gameList: gameList as unknown as SelectType[],
       channelList: channelList as unknown as SelectType[],
       channelShow: channelShow as unknown as boolean,

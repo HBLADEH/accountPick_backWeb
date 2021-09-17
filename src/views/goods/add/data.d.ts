@@ -18,13 +18,3 @@ export interface GoodsFormDataType {
   gameId: string;
   channelId: string;
 }
-
-// export interface SelectType {
-//   label: string;
-//   value: number;
-// }
-
-export interface SelectType {
-  name: string;
-  id: number;
-}

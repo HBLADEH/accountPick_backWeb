@@ -1,7 +1,9 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
-import { createGoods, getChannelListByGameId, getGameList } from './service';
-import { FormDataType, SelectType } from "./data.d";
+import { createGoods } from './service';
+import { getChannelListByGameId, getGameList } from '../util/select/service'
+import { FormDataType } from "./data.d";
+import { SelectType } from "../util/select/data"
 import { ResponseData } from '@/utils/request';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
@@ -51,13 +53,6 @@ const StoreModel: ModuleType = {
                     ...initState,
                     gameList: data
                 })
-                // commit('setGameList', {
-                //     ...initState,
-                //     gameList: data.map((v: { id: number; name: string; }) => ({
-                //         value: v.id,
-                //         label: v.name
-                //     }))
-                // })
                 return true;
             } catch (error) {
                 return false;

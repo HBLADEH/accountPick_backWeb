@@ -4,37 +4,35 @@
       <el-form :model="searchModelRef" ref="searchFormRef" label-width="80px">
         <el-row :gutter="16" type="flex" justify="end" class="flex-wrap-wrap">
           <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
-            <el-form-item label="名称：">
+            <el-form-item label="商品编号">
+              <el-input placeholder="请输入" v-model="searchModelRef.id" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+            <el-form-item label="商品名称">
               <el-input placeholder="请输入" v-model="searchModelRef.name" />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
-            <el-form-item label="链接：">
-              <el-input placeholder="请输入" v-model="searchModelRef.href" />
+            <el-form-item label="所属游戏">
+              <el-select @visible-change="getGameList" @change="getChannelList" v-model="searchModelRef.gameId" placeholder="请选择" filterable clearable style="width:100%">
+                <el-option v-for="item in gameList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+              <!-- <el-input placeholder="请输入" v-model="searchModelRef.href" /> -->
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
-            <el-form-item label="位置：">
-              <TypeSelect placeholder="请选择" v-model="searchModelRef.type" style="width:100%" />
+            <el-form-item label="所属渠道">
+              <el-select v-model="searchModelRef.channelId" :disabled="!channelShow" placeholder="请选择" filterable clearable style="width:100%">
+                <el-option v-for="item in channelList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+              <!-- <TypeSelect placeholder="请选择" v-model="searchModelRef.type" style="width:100%" /> -->
             </el-form-item>
           </el-col>
-          <!-- <el-col v-if='searchOpen' :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
-            <el-form-item label="备注：">
-              <el-input placeholder="请输入" v-model="searchModelRef.desc" />
-            </el-form-item>
-          </el-col> -->
-          <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
             <div class="text-align-right" style="padding-bottom: 24px">
               <el-button type="primary" @click="searchFormSubmit">查询</el-button>
               <el-button @click="searchResetFields">重置</el-button>
-              <!-- <el-button type="text" style="margin-left: 8px" @click="setSearchOpen">
-                <template v-if="searchOpen">
-                  收起 <i class="el-icon-arrow-up"></i>
-                </template>
-                <template v-else>
-                  展开 <i class="el-icon-arrow-down"></i>
-                </template>
-              </el-button> -->
             </div>
           </el-col>
         </el-row>
@@ -47,27 +45,16 @@
         <el-row>
           <div class="text-align-right">
             <el-col :xs="24" :sm="24" :md="24">
-              <el-button type="primary" @click="() => setCreateFormVisible(true)">新增</el-button>
-              <el-button type="danger">删除</el-button>
+              <el-button type="primary" @click="goAddPage">新增</el-button>
+              <el-button type="danger" @click="deleteTableDatas">删除</el-button>
             </el-col>
           </div>
-          <!-- <el-col :span="16" class="text-align-right">
-            <el-radio-group v-model="tabVal">
-              <el-radio-button label="all">全部</el-radio-button>
-              <el-radio-button label="header">头部</el-radio-button>
-              <el-radio-button label="footer">底部</el-radio-button>
-            </el-radio-group>
-          </el-col> -->
         </el-row>
       </template>
 
-      <el-table row-key="id" :data="list" v-loading="loading">
+      <el-table row-key="id" :data="list" v-loading="loading" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <!-- <el-table-column type="index" label="序号" :index="(index) => {
-                        return (pagination.current - 1) * pagination.pageSize + index + 1;
-                    }" width="80">
-        </el-table-column> -->
         <el-table-column label="序号" prop="id" width="55">
         </el-table-column>
         <el-table-column label="名称" prop="name">
@@ -87,16 +74,10 @@
         </el-table-column>
         <el-table-column label="更新时间" prop="updateTime">
         </el-table-column>
-        <!-- <el-table-column label="位置" prop="type">
-          <template #default="{row}">
-            <el-tag v-if="row.type === 'header'" type="success">头部</el-tag>
-            <el-tag v-else type="warning">底部</el-tag>
-          </template>
-        </el-table-column> -->
 
         <el-table-column label="操作" prop="action" width="150">
           <template #default="{row}">
-            <el-button type="text" @click="() => detailUpdateData(row.id)" :loading="detailUpdateLoading.includes(row.id)">编辑</el-button>
+            <el-button type="text" @click="() => detailUpdateData(row.id)">编辑</el-button>
             <el-button type="text" @click="() => deleteTableData(row.id)" :loading="deleteLoading.includes(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -110,10 +91,6 @@
         </el-pagination>
       </div>
 
-      <create-form :visible="createFormVisible" :onCancel="() => setCreateFormVisible(false)" :onSubmitLoading="createSubmitLoading" :onSubmit="createSubmit" />
-
-      <update-form v-if="updateFormVisible===true" :visible="updateFormVisible" :values="updateData" :onCancel="() => updataFormCancel()" :onSubmitLoading="updateSubmitLoading" :onSubmit="updateSubmit" />
-
     </el-card>
   </div>
 </template>
@@ -122,30 +99,29 @@ import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ElMessageBox, ElMessage, ElForm } from 'element-plus';
-import CreateForm from './components/CreateForm.vue';
-import UpdateForm from './components/UpdateForm.vue';
 import TypeSelect from './components/TypeSelect.vue';
 import { StateType as ListStateType } from './store';
-import { PaginationConfig, TableListItem, TableSearchItem } from './data.d';
+/* 下拉框 */
+import { StateType as SelectStateType } from '../util/select/store';
+import { PaginationConfig, TableListItem, TableListQueryParams, TableSearchItem } from './data.d';
+import { SelectType } from '../util/select/data';
 
 interface GoodsSearchTablePageSetupData {
   list: TableListItem[];
   pagination: PaginationConfig;
   loading: boolean;
   getList: (current: number) => Promise<void>;
-  createFormVisible: boolean;
-  setCreateFormVisible: (val: boolean) => void;
-  createSubmitLoading: boolean;
-  createSubmit: (values: Omit<TableListItem, 'id'>, resetFields: () => void) => Promise<void>;
-  detailUpdateLoading: number[];
-  detailUpdateData: (id: number) => Promise<void>;
-  updateData: Partial<TableListItem>;
-  updateFormVisible: boolean;
-  updataFormCancel: () => void;
-  updateSubmitLoading: boolean;
-  updateSubmit: (values: TableListItem, resetFields: () => void) => Promise<void>;
+  gameList: SelectType[];
+  channelList: SelectType[];
+  channelShow: boolean;
+  getGameList: () => void;
+  getChannelList: () => void;
+  goAddPage: () => void;
+  handleSelectionChange: (val: TableListItem[]) => void;
   deleteLoading: number[];
+  detailUpdateData: (id: number) => void;
   deleteTableData: (id: number) => void;
+  deleteTableDatas: () => void;
   tabVal: string;
   searchOpen: boolean;
   setSearchOpen: () => void;
@@ -158,14 +134,13 @@ interface GoodsSearchTablePageSetupData {
 export default defineComponent({
   name: 'GoodsSearchTablePage',
   components: {
-    CreateForm,
-    UpdateForm,
     TypeSelect,
   },
   setup(): GoodsSearchTablePageSetupData {
     const router = useRouter();
 
     const store = useStore<{ GoodsSearchTable: ListStateType }>();
+    const storeSelect = useStore<{ GamesAndChannelSelect: SelectStateType }>();
 
     // 列表数据
     const list = computed<TableListItem[]>(() => store.state.GoodsSearchTable.tableData.list);
@@ -179,64 +154,51 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const getList = async (current: number): Promise<void> => {
       loading.value = true;
-      // console.log(store.state.GoodsSearchTable.tableData);
-
       await store.dispatch('GoodsSearchTable/queryTableData', {
+        id: searchModelRef.id,
+        name: searchModelRef.name,
+        gameId: searchModelRef.gameId,
+        channelId: searchModelRef.channelId,
         pageSize: pagination.value.pageSize,
         currentPage: current,
       });
       loading.value = false;
     };
 
-    // 新增弹框 - visible
-    const createFormVisible = ref<boolean>(false);
-    const setCreateFormVisible = (val: boolean) => {
-      createFormVisible.value = val;
-    };
-    // 新增弹框 - 提交 loading
-    const createSubmitLoading = ref<boolean>(false);
-    // 新增弹框 - 提交
-    const createSubmit = async (values: Omit<TableListItem, 'id'>, resetFields: () => void) => {
-      createSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('GoodsSearchTable/createTableData', values);
-      if (res === true) {
-        resetFields();
-        setCreateFormVisible(false);
-        ElMessage.success('新增成功！');
-        getList(1);
-      }
-      createSubmitLoading.value = false;
+    /* 下拉框开始 */
+    const gameList = computed<SelectType[]>(() => storeSelect.state.GamesAndChannelSelect.gameList);
+    let getGameList = async () => {
+      if (gameList.value.length == 0) storeSelect.dispatch('GamesAndChannelSelect/getGameList');
     };
 
-    // 编辑弹框 - visible
-    const updateFormVisible = ref<boolean>(false);
-    const setUpdateFormVisible = (val: boolean) => {
-      updateFormVisible.value = val;
-    };
-    const updataFormCancel = () => {
-      setUpdateFormVisible(false);
-      store.commit('GoodsSearchTable/setUpdateData', {});
-    };
-    // 编辑弹框 - 提交 loading
-    const updateSubmitLoading = ref<boolean>(false);
-    // 编辑弹框 - 提交
-    const updateSubmit = async (values: TableListItem, resetFields: () => void) => {
-      updateSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('GoodsSearchTable/updateTableData', values);
-      if (res === true) {
-        updataFormCancel();
-        ElMessage.success('编辑成功！');
-        getList(pagination.value.current);
-      }
-      updateSubmitLoading.value = false;
-    };
-
-    // 编辑弹框 data
-    const updateData = computed<Partial<TableListItem>>(
-      () => store.state.GoodsSearchTable.updateData
+    let channelShow = ref<boolean>(false);
+    let channelList = computed<SelectType[]>(
+      () => storeSelect.state.GamesAndChannelSelect.channelList
     );
-    const detailUpdateLoading = ref<number[]>([]);
-    const detailUpdateData = async (id: number) => {
+
+    const getChannelList = async () => {
+      searchModelRef.channelId = undefined;
+      if (searchModelRef.gameId == null || !searchModelRef.gameId) {
+        storeSelect.state.GamesAndChannelSelect.channelList = [];
+        searchModelRef.channelId = undefined;
+        channelShow.value = false;
+      } else {
+        channelShow.value = true;
+        storeSelect.dispatch('GamesAndChannelSelect/getChannelListByGameId', searchModelRef.gameId);
+      }
+    };
+    /* 下拉框结束 */
+
+    let selectedData: TableListItem[];
+    const handleSelectionChange = (val: TableListItem[]) => {
+      selectedData = val;
+    };
+
+    const goAddPage = () => {
+      router.push('/goods/add');
+    };
+
+    const detailUpdateData = (id: number) => {
       router.push({ path: '/goods/edit', query: { id: id } });
     };
 
@@ -244,19 +206,34 @@ export default defineComponent({
     const deleteLoading = ref<number[]>([]);
     // 删除
     const deleteTableData = (id: number) => {
+      const ids = [id];
+      doDeleteTableData(ids);
+    };
+
+    const deleteTableDatas = () => {
+      if (selectedData) {
+        const ids: number[] = selectedData.map((item, index) => {
+          return item.id;
+        });
+        doDeleteTableData(ids);
+      } else {
+        ElMessage.error('请先选择要删除的数据');
+      }
+    };
+
+    const doDeleteTableData = (id: number[]) => {
       ElMessageBox.confirm('确定删除吗？', '删除', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning',
       })
         .then(async () => {
-          deleteLoading.value = [id];
-          const res: boolean = await store.dispatch('GoodsSearchTable/deleteTableData', id);
+          let res: boolean = false;
+          res = await store.dispatch('GoodsSearchTable/deleteTableData', id);
           if (res === true) {
             ElMessage.success('删除成功！');
             getList(pagination.value.current);
           }
-          deleteLoading.value = [];
         })
         .catch((error: any) => {
           console.log(error);
@@ -271,7 +248,7 @@ export default defineComponent({
       searchOpen.value = !searchOpen.value;
     };
     // 表单值
-    const searchModelRef = reactive<Omit<TableSearchItem, 'id'>>({
+    const searchModelRef = reactive<TableSearchItem>({
       name: '',
     });
     // search form
@@ -279,16 +256,17 @@ export default defineComponent({
     // 重置
     const searchResetFields = () => {
       searchFormRef.value && searchFormRef.value.resetFields();
+      searchModelRef.id = undefined;
       searchModelRef.name = '';
-      // searchModelRef.desc = '';
-      // searchModelRef.href = '';
-      // searchModelRef.type = '';
+      searchModelRef.gameId = undefined;
+      searchModelRef.channelId = undefined;
     };
     // 搜索
     const searchFormSubmit = async () => {
       try {
-        console.log('search', searchModelRef);
-        ElMessage.warning('进行了搜索!');
+        // console.log('search', searchModelRef);
+        getList(1);
+        // ElMessage.warning('进行了搜索!');
       } catch (error) {
         ElMessage.warning(error);
       }
@@ -303,19 +281,20 @@ export default defineComponent({
       pagination: pagination as unknown as PaginationConfig,
       loading: loading as unknown as boolean,
       getList,
-      createFormVisible: createFormVisible as unknown as boolean,
-      setCreateFormVisible,
-      createSubmitLoading: createSubmitLoading as unknown as boolean,
-      createSubmit,
-      detailUpdateLoading: detailUpdateLoading as unknown as number[],
-      detailUpdateData,
-      updateData: updateData as Partial<TableListItem>,
-      updateFormVisible: updateFormVisible as unknown as boolean,
-      updataFormCancel,
-      updateSubmitLoading: updateSubmitLoading as unknown as boolean,
-      updateSubmit,
+
+      /* 下拉框开始 */
+      gameList: gameList as unknown as SelectType[],
+      channelList: channelList as unknown as SelectType[],
+      channelShow: channelShow as unknown as boolean,
+      getGameList,
+      getChannelList,
+      /* 下拉框结束 */
+      goAddPage,
+      handleSelectionChange,
       deleteLoading: deleteLoading as unknown as number[],
+      detailUpdateData,
       deleteTableData,
+      deleteTableDatas,
       tabVal: tabVal as unknown as string,
       searchOpen: searchOpen as unknown as boolean,
       setSearchOpen,
