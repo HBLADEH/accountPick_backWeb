@@ -6,7 +6,12 @@ export async function getGameList(): Promise<any> {
     method: 'GET',
   });
 }
-
+export async function getChannelList(): Promise<any> {
+  return request({
+    url: '/channels',
+    method: 'GET',
+  });
+}
 export async function getChannelListByGameId(gameId: number): Promise<any> {
   return request({
     url: `/channelsByGame/${gameId}`,

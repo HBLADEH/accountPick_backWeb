@@ -85,9 +85,7 @@
       </el-table>
 
       <div class="padding-t10 text-align-right">
-        <el-pagination background layout="prev, pager, next" v-model:current-page="pagination.current" :page-size="pagination.pageSize" :total="pagination.total" @current-change="(p) => {
-                        getList(p || 1);
-                    }">
+        <el-pagination background layout="total, sizes, prev, pager, next, jumper" v-model:current-page="pagination.current" :page-sizes="[10, 50, 100, 200]" :page-size="pagination.pageSize" :total="pagination.total" @size-change="(p) => { pagination.pageSize = p; getList(p); }" @current-change="(p) => { getList(p || 1); }">
         </el-pagination>
       </div>
 

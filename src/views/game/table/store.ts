@@ -70,6 +70,7 @@ const StoreModel: ModuleType = {
                         ...initState.tableData.pagination,
                         current: data.current,
                         total: data.total || 0,
+                        pageSize: data.size
                     },
                 });
                 console.log(initState.tableData);

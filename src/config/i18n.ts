@@ -12,7 +12,7 @@ import { getLocale, setLocale, importAllLocales, defaultLang } from "@/utils/i18
 import enUS from 'element-plus/lib/locale/lang/en';
 import zhCN from 'element-plus/lib/locale/lang/zh-cn';
 import zhTW from 'element-plus/lib/locale/lang/zh-tw';
-export const elementPlusMessages: { [key: string]: any} = {
+export const elementPlusMessages: { [key: string]: any } = {
     'zh-CN': zhCN,
     'zh-TW': zhTW,
     'en-US': enUS,
@@ -35,10 +35,10 @@ const i18n = createI18n({
  * 设置语言
  * @param locale 
  */
-export function setI18nLanguage(locale: string, realReload = false) {  
-    setLocale(locale,realReload, function() {
+export function setI18nLanguage(locale: string, realReload = false) {
+    setLocale(locale, realReload, function () {
         // i18n.global.locale = locale // legacy: true
-        i18n.global.locale.value = locale;        
+        i18n.global.locale.value = locale;
     })
 }
 

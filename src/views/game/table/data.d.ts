@@ -16,6 +16,12 @@ export interface TableListItem {
   name: string;
 }
 
+export interface TableFromItem {
+  id: number;
+  name: string;
+  channelList: number[];
+}
+
 export interface TableDataType {
   list: TableListItem[];
   pagination: PaginationConfig;

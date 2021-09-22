@@ -51,9 +51,7 @@
       </el-table>
 
       <div class="padding-t10 text-align-right">
-        <el-pagination background layout="prev, pager, next" v-model:current-page="pagination.current" :page-size="pagination.pageSize" :total="pagination.total" @current-change="(p) => {
-                        getList(p || 1);
-                    }">
+        <el-pagination background layout="total, sizes, prev, pager, next, jumper" v-model:current-page="pagination.current" :page-sizes="[10, 50, 100, 200]" :page-size="pagination.pageSize" :total="pagination.total" @size-change="changePageSize" @current-change="(p) => { getList(p || 1); }">
         </el-pagination>
       </div>
 
@@ -71,10 +69,10 @@ import { ElMessageBox, ElMessage, ElForm } from 'element-plus';
 import CreateForm from './components/CreateForm.vue';
 import UpdateForm from './components/UpdateForm.vue';
 import TypeSelect from './components/TypeSelect.vue';
-import { StateType as GameStateType } from './store';
+import { StateType as ChannelStateType } from './store';
 import { PaginationConfig, TableListItem } from './data.d';
 
-interface GameSearchTablePageSetupData {
+interface ChannelSearchTablePageSetupData {
   list: TableListItem[];
   pagination: PaginationConfig;
   loading: boolean;
@@ -96,36 +94,42 @@ interface GameSearchTablePageSetupData {
   searchFormRef: typeof ElForm;
   searchResetFields: () => void;
   searchFormSubmit: () => Promise<void>;
+  changePageSize: (p: number) => void;
 }
 
 export default defineComponent({
-  name: 'GameSearchTablePage',
+  name: 'ChannelSearchTablePage',
   components: {
     CreateForm,
     UpdateForm,
     TypeSelect,
   },
-  setup(): GameSearchTablePageSetupData {
-    const store = useStore<{ GameSearchTable: GameStateType }>();
+  setup(): ChannelSearchTablePageSetupData {
+    const store = useStore<{ ChannelSearchTable: ChannelStateType }>();
 
     // 列表数据
-    const list = computed<TableListItem[]>(() => store.state.GameSearchTable.tableData.list);
+    const list = computed<TableListItem[]>(() => store.state.ChannelSearchTable.tableData.list);
 
     // 列表分页
     const pagination = computed<PaginationConfig>(
-      () => store.state.GameSearchTable.tableData.pagination
+      () => store.state.ChannelSearchTable.tableData.pagination
     );
 
     // 获取数据
     const loading = ref<boolean>(true);
     const getList = async (current: number): Promise<void> => {
       loading.value = true;
-      await store.dispatch('GameSearchTable/queryTableData', {
+      await store.dispatch('ChannelSearchTable/queryTableData', {
         pageSize: pagination.value.pageSize,
         currentPage: current,
         name: searchModelRef.name,
       });
       loading.value = false;
+    };
+
+    const changePageSize = (p: number) => {
+      pagination.value.pageSize = p;
+      getList(1);
     };
 
     // 新增弹框 - visible
@@ -138,7 +142,7 @@ export default defineComponent({
     // 新增弹框 - 提交
     const createSubmit = async (values: Omit<TableListItem, 'id'>, resetFields: () => void) => {
       createSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('GameSearchTable/createTableData', values);
+      const res: boolean = await store.dispatch('ChannelSearchTable/createTableData', values);
       if (res === true) {
         resetFields();
         setCreateFormVisible(false);
@@ -155,14 +159,14 @@ export default defineComponent({
     };
     const updataFormCancel = () => {
       setUpdateFormVisible(false);
-      store.commit('GameSearchTable/setUpdateData', {});
+      store.commit('ChannelSearchTable/setUpdateData', {});
     };
     // 编辑弹框 - 提交 loading
     const updateSubmitLoading = ref<boolean>(false);
     // 编辑弹框 - 提交
     const updateSubmit = async (values: TableListItem, resetFields: () => void) => {
       updateSubmitLoading.value = true;
-      const res: boolean = await store.dispatch('GameSearchTable/updateTableData', values);
+      const res: boolean = await store.dispatch('ChannelSearchTable/updateTableData', values);
       if (res === true) {
         updataFormCancel();
         ElMessage.success('编辑成功！');
@@ -174,12 +178,12 @@ export default defineComponent({
 
     // 编辑弹框 data
     const updateData = computed<Partial<TableListItem>>(
-      () => store.state.GameSearchTable.updateData
+      () => store.state.ChannelSearchTable.updateData
     );
     const detailUpdateLoading = ref<number[]>([]);
     const detailUpdateData = async (id: number) => {
       detailUpdateLoading.value = [id];
-      const res: boolean = await store.dispatch('GameSearchTable/queryUpdateData', id);
+      const res: boolean = await store.dispatch('ChannelSearchTable/queryUpdateData', id);
       if (res === true) {
         setUpdateFormVisible(true);
       }
@@ -197,7 +201,7 @@ export default defineComponent({
       })
         .then(async () => {
           deleteLoading.value = [id];
-          const res: boolean = await store.dispatch('GameSearchTable/deleteTableData', id);
+          const res: boolean = await store.dispatch('ChannelSearchTable/deleteTableData', id);
           if (res === true) {
             ElMessage.success('删除成功！');
             getList(pagination.value.current);
@@ -257,6 +261,7 @@ export default defineComponent({
       searchFormRef: searchFormRef as unknown as typeof ElForm,
       searchResetFields,
       searchFormSubmit,
+      changePageSize,
     };
   },
 });

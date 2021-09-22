@@ -2,7 +2,7 @@ import { ResponseData } from '@/utils/request';
 import { StoreModuleType } from '@/utils/store';
 import { Action, Mutation } from 'vuex';
 import { SelectType } from '../select/data'
-import { getChannelListByGameId, getGameList } from './service';
+import { getChannelList, getChannelListByGameId, getGameList } from './service';
 
 export interface StateType {
   gameList: SelectType[]
@@ -18,6 +18,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
   actions: {
     getGameList: Action<StateType, StateType>;
     getChannelListByGameId: Action<StateType, StateType>;
+    getChannelList: Action<StateType, StateType>;
   };
 }
 
@@ -42,8 +43,6 @@ const StoreModel: ModuleType = {
   },
   actions: {
     async getGameList({ commit }) {
-      console.log(123);
-
       try {
         const response: ResponseData = await getGameList();
         const { data } = response
@@ -59,6 +58,19 @@ const StoreModel: ModuleType = {
     async getChannelListByGameId({ commit }, gameId: number) {
       try {
         const response: ResponseData = await getChannelListByGameId(gameId);
+        const { data } = response
+        commit('setChannelList', {
+          ...initState,
+          channelList: data
+        })
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    async getChannelList({ commit }) {
+      try {
+        const response: ResponseData = await getChannelList();
         const { data } = response
         commit('setChannelList', {
           ...initState,

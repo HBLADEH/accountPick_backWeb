@@ -9,21 +9,30 @@
       <el-form-item label="名称" prop="name">
         <el-input v-model="modelRef.name" placeholder="请输入名称" />
       </el-form-item>
+      <el-form-item label="所属渠道" prop="channelId">
+        <el-select v-model="modelRef.channelId" placeholder="请选择" filterable multiple clearable style="width:100%">
+          <el-option v-for="item in channelList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </el-form-item>
     </el-form>
 
   </el-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, reactive, ref } from 'vue';
+import { computed, defineComponent, onMounted, PropType, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import TypeSelect from './TypeSelect.vue';
-import { TableListItem } from '../data.d';
+import { TableFromItem } from '../data.d';
 import { ElForm, ElMessage } from 'element-plus';
+import { StateType as SelectStateType } from '../../../goods/util/select/store';
+import { SelectType } from '@/views/goods/util/select/data';
+import { useStore } from 'vuex';
 
 interface CreateFormSetupData {
-  modelRef: Omit<TableListItem, 'id'>;
+  modelRef: Omit<TableFromItem, 'id'>;
   rulesRef: any;
   formRef: typeof ElForm;
+  channelList: SelectType[];
   resetFields: () => void;
   onFinish: () => Promise<void>;
 }
@@ -45,7 +54,7 @@ export default defineComponent({
     },
     onSubmit: {
       type: Function as PropType<
-        (values: Omit<TableListItem, 'id'>, resetFields: () => void) => void
+        (values: Omit<TableFromItem, 'id'>, resetFields: () => void) => void
       >,
       required: true,
     },
@@ -55,11 +64,22 @@ export default defineComponent({
   },
   setup(props): CreateFormSetupData {
     const { t } = useI18n();
+    const storeSelect = useStore<{ GamesAndChannelSelect: SelectStateType }>();
+
+    const channelList = computed<SelectType[]>(
+      () => storeSelect.state.GamesAndChannelSelect.channelList
+    );
+
+    onMounted(() => {
+      storeSelect.dispatch('GamesAndChannelSelect/getChannelList');
+    });
 
     // 表单值
-    const modelRef = reactive<Omit<TableListItem, 'id'>>({
+    const modelRef = reactive<Omit<TableFromItem, 'id'>>({
       name: '',
+      channelList: [],
     });
+
     // 表单验证
     const rulesRef = reactive({
       name: [
@@ -97,6 +117,7 @@ export default defineComponent({
     return {
       modelRef,
       rulesRef,
+      channelList: channelList as unknown as SelectType[],
       formRef: formRef as unknown as typeof ElForm,
       resetFields,
       onFinish,

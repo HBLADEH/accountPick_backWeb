@@ -46,7 +46,7 @@ const initState: StateType = {
 
 const StoreModel: ModuleType = {
     namespaced: true,
-    name: 'GameSearchTable',
+    name: 'ChannelSearchTable',
     state: {
         ...initState
     },
@@ -70,9 +70,10 @@ const StoreModel: ModuleType = {
                         ...initState.tableData.pagination,
                         current: data.current,
                         total: data.total || 0,
+                        pageSize: data.size
                     },
                 });
-                console.log(initState.tableData);
+                // console.log(initState.tableData);
 
                 return true;
             } catch (error) {
