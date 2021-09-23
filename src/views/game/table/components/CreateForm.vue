@@ -10,7 +10,7 @@
         <el-input v-model="modelRef.name" placeholder="请输入名称" />
       </el-form-item>
       <el-form-item label="所属渠道" prop="channelId">
-        <el-select v-model="modelRef.channelId" placeholder="请选择" filterable multiple clearable style="width:100%">
+        <el-select v-model="modelRef.channelList" placeholder="请选择" filterable multiple clearable style="width:100%">
           <el-option v-for="item in channelList" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>

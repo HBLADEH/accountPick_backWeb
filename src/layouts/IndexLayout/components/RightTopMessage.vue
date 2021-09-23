@@ -1,7 +1,7 @@
 <template>
   <router-link to="/" class="indexlayout-top-message">
-    <i class="el-icon-bell" :style="{ fontSize: '16px' }"></i>
-    <el-badge class="indexlayout-top-message-badge" :value="message" type="danger" />
+    <!-- <i class="el-icon-bell" :style="{ fontSize: '16px' }"></i>
+    <el-badge class="indexlayout-top-message-badge" :value="message" type="danger" /> -->
   </router-link>
 </template>
 <script lang="ts">

@@ -1,7 +1,7 @@
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { ResponseData } from '@/utils/request';
-import { TableDataType, TableListItem, TableListQueryParams } from './data.d';
+import { TableDataType, TableFromItem, TableListItem, TableListQueryParams } from './data.d';
 import {
     queryList,
     removeData,
@@ -13,7 +13,7 @@ import {
 
 export interface StateType {
     tableData: TableDataType;
-    updateData: Partial<TableListItem>;
+    updateData: Partial<TableFromItem>;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {

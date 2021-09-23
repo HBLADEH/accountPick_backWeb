@@ -71,7 +71,7 @@ import UpdateForm from './components/UpdateForm.vue';
 import TypeSelect from './components/TypeSelect.vue';
 import { StateType as GameStateType } from './store';
 
-import { PaginationConfig, TableListItem } from './data.d';
+import { PaginationConfig, TableFromItem, TableListItem } from './data.d';
 
 interface GameSearchTablePageSetupData {
   list: TableListItem[];
@@ -172,7 +172,7 @@ export default defineComponent({
     };
 
     // 编辑弹框 data
-    const updateData = computed<Partial<TableListItem>>(
+    const updateData = computed<Partial<TableFromItem>>(
       () => store.state.GameSearchTable.updateData
     );
     const detailUpdateLoading = ref<number[]>([]);
